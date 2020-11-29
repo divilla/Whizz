@@ -1,0 +1,7 @@
+﻿using System;
+
+namespace WhizzBuilder.Attributes
+{
+    [AttributeUsage(AttributeTargets.Property)]
+    public class PrimaryKeyAttribute : BaseAttribute {}
+}

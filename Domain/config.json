@@ -1,0 +1,11 @@
+﻿{
+  "ConnectionString": "Host=localhost;Database=quitepos_demo;Username=quitepos;Password=Masa{}/3",
+  "TargetFolder": "",
+  "Filename": "DbEntities.cs",
+  "NewLineCharacter": "\r\n",
+  "Namespace": "Domain",
+  "AddPartialModifier": true,
+  "MarkDirty": true,
+  "BaseEntityClass": "BaseEntity",
+  "BaseEntityClassNamespace": "WhizzBase.Base"
+}

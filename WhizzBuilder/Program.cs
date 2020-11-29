@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using Utf8Json;
 using WhizzBase.Base;
 using WhizzBase.Extensions;
@@ -37,6 +38,9 @@ namespace WhizzBuilder
                 f.SetTargetFolder(Config.TargetFolder)
                     .SetFilename(Config.Filename);
 
+                f.AddUsing("System");
+                f.AddUsing("WhizzBase.Attributes");
+                
                 if (Config.BaseEntityClassNamespace != null)
                     f.AddUsing(Config.BaseEntityClassNamespace);
                 
@@ -53,7 +57,7 @@ namespace WhizzBuilder
                         {
                             n.AddClass(c =>
                             {
-                                c.AddTableAttribute(Schema.GetQualifiedRelationName(relation.RelationName, relation.SchemaName));
+                                c.AddTableAttribute(Schema.GetEscapedRelationName(relation.RelationName, relation.SchemaName));
                                 
                                 c.Name(relation.SchemaName == DbSchema.DefaultSchema
                                     ? $"{relation.RelationName.ToPascalCase()}"
@@ -69,6 +73,28 @@ namespace WhizzBuilder
                                 {
                                     c.AddProperty(p =>
                                     {
+                                        if (relation.PrimaryKeyColumns.Length == 1 && column.IsPrimaryKey)
+                                            p.AddPrimaryKeyAttribute();
+                                        else if (relation.PrimaryKeyColumns.Length > 1 && column.IsPrimaryKey)
+                                            p.AddCompositePrimaryKeyAttribute();
+
+                                        foreach (var foreignKey in relation.ForeignKeyColumns
+                                            .Where(q => q.ColumnName == column.ColumnName))
+                                        {
+                                            p.AddForeignKeyAttribute(
+                                                Schema.GetEscapedRelationName(foreignKey.PrimaryKeyTableName, foreignKey.PrimaryKeySchemaName),
+                                                Schema.EscapedQuote(foreignKey.PrimaryKeyColumnName));
+                                        }
+
+                                        foreach (var uniqueIndex in relation.UniqueIndexes
+                                            .Where(q => q.ColumnNames.Contains(column.ColumnName)))
+                                        {
+                                            Console.WriteLine(uniqueIndex.IndexName);
+                                            p.AddUniqueIndexAttribute(Schema.EscapedQuote(uniqueIndex.IndexName));
+                                        }
+
+                                        p.AddColumnAttribute(Schema.EscapedQuote(column.ColumnName), column.Position);
+
                                         p.Name(column.ColumnName.ToPascalCase());
 
                                         p.Type(column.ClrType != null 
@@ -82,29 +108,13 @@ namespace WhizzBuilder
                             });
                         }
                     }
-
-                    n.AddClass(c => c.Name("TestEntity")
-                            .AddTableAttribute("test")
-                            .ClassModifiers(m => m.Partial)
-                            .AddProperty(p => p.Name("Id")
-                                .AddPrimaryKeyAttribute()
-                                .AddCompositePrimaryKeyAttribute()
-                                .AddForeignKeyAttribute("table", "column")
-                                .AddUniqueIndexAttribute("uniqueIndexName")
-                                .AddColumnAttribute("id", 1)
-                                .Type("Guid")
-                                .MarkDirty())
-                            .AddProperty(p => p.Name("Name")
-                                .AddColumnAttribute("name", 2)
-                                .Type("string")
-                                .MarkDirty())
-                        )
-                        .AddClass(c => c.Name("Test2Entity")
-                            .AddTableAttribute("test")
-                            .ClassModifiers(m => m.Partial));
                 });
             });
-            Console.WriteLine(result);
+            
+            if (!string.IsNullOrEmpty(Config.TargetFolder) 
+                && !string.IsNullOrEmpty(Config.Filename) 
+                && System.IO.Directory.Exists(Config.TargetFolder))
+                System.IO.File.WriteAllText($"{Config.TargetFolder}/{Config.Filename}", result, Encoding.UTF8);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿{
   "ConnectionString": "Host=localhost;Database=quitepos_demo;Username=quitepos;Password=Masa{}/3",
-  "TargetFolder": "",
+  "TargetFolder": "C:/sites/quitepos/Whizz/Domain",
   "Filename": "DbEntities.cs",
   "NewLineCharacter": "\r\n",
   "Namespace": "Domain",

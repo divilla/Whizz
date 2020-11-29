@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using WhizzBuilder.Base;
 using WhizzBuilder.Constants;
@@ -13,7 +14,7 @@ namespace WhizzBuilder.Elements
         private AttributeElement _primaryKeyAttribute;
         private AttributeElement _compositePrimaryKeyAttribute;
         private AttributeElement _foreignKeyAttribute;
-        private AttributeElement _uniqueIndexAttribute;
+        private List<AttributeElement> _uniqueIndexAttributes = new List<AttributeElement>();
         private AttributeElement _columnAttribute;
         [Required] private string _type;
         private string _accessModifier = "public ";
@@ -32,19 +33,19 @@ namespace WhizzBuilder.Elements
             return this;
         }
 
-        public PropertyElement AddForeignKeyAttribute(string tableName, string columnName)
+        public PropertyElement AddForeignKeyAttribute(string relationName, string columnName)
         {
-            _foreignKeyAttribute = new AttributeElement("ForeignKey", tableName, columnName);
+            _foreignKeyAttribute = new AttributeElement("ForeignKey", relationName, columnName);
             return this;
         }
 
         public PropertyElement AddUniqueIndexAttribute(string indexName)
         {
-            _uniqueIndexAttribute = new AttributeElement("UniqueIndex", indexName);
+            _uniqueIndexAttributes.Add(new AttributeElement("UniqueIndex", indexName));
             return this;
         }
 
-        public PropertyElement AddColumnAttribute(string name, ushort position)
+        public PropertyElement AddColumnAttribute(string name, short position)
         {
             _columnAttribute = new AttributeElement("Column", name, position);
             return this;
@@ -116,7 +117,10 @@ namespace WhizzBuilder.Elements
             attributes += _primaryKeyAttribute == null ? "" : Indentation + _primaryKeyAttribute.Build();
             attributes += _compositePrimaryKeyAttribute == null ? "" : Indentation + _compositePrimaryKeyAttribute.Build();
             attributes += _foreignKeyAttribute == null ? "" : Indentation + _foreignKeyAttribute.Build();
-            attributes += _uniqueIndexAttribute == null ? "" : Indentation + _uniqueIndexAttribute.Build();
+            foreach (var attribute in _uniqueIndexAttributes)
+            {
+                attributes += Indentation + attribute.Build();
+            }
             attributes += _columnAttribute == null ? "" : Indentation + _columnAttribute.Build();
 
             return attributes;

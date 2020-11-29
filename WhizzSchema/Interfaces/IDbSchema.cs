@@ -20,6 +20,8 @@ namespace WhizzSchema.Interfaces
         bool RelationExists(string relationName, string schemaName);
         RelationSchema GetRelationSchema(string relationName, string schemaName);
         string GetQualifiedRelationName(string relationName, string schemaName);
+        string GetEscapedRelationName(string relationName, string schemaName);
         string Quote(string value);
+        string EscapedQuote(string value);
     }
 }

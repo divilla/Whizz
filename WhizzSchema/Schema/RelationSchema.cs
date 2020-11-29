@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using WhizzORM.Schema;
@@ -20,7 +21,7 @@ namespace WhizzSchema.Schema
         public ImmutableArray<string> ColumnNames { get; }
         public ImmutableArray<string> PrimaryKeyColumns { get; }
         public ImmutableArray<ForeignKeySchema> ForeignKeyColumns { get; }
-        public ImmutableArray<ImmutableArray<string>> UniqueIndexes { get; }
+        public ImmutableArray<UniqueIndexSchema> UniqueIndexes { get; }
 
         public RelationSchema(DbSchema dbSchema, string relationName, string schemaName)
         {
@@ -80,10 +81,10 @@ namespace WhizzSchema.Schema
                 .Where(q => q.SchemaName == SchemaName && q.TableName == RelationName)
                 .Select(s => new ForeignKeySchema(s.SchemaName, s.TableName, s.ColumnName, s.ConstraintName, s.PrimaryKeySchemaName, s.PrimaryKeyTableName, s.PrimaryKeyColumnName))
                 .ToImmutableArray();
-            
-            UniqueIndexes = dbSchema.UniqueIndexEntities
-                .Where(q => q.SchemaName == SchemaName && q.TableName == RelationName)
-                .Select(s => s.ColumnNames.ToImmutableArray())
+
+            UniqueIndexes = dbSchema.UniqueIndexEntities.Where(q => q.TableName == RelationName && q.SchemaName == SchemaName)
+                .Select(s => new UniqueIndexSchema(s.SchemaName, s.TableName, s.IndexName, s.ColumnNames))
+                .ToArray()
                 .ToImmutableArray();
         }
 

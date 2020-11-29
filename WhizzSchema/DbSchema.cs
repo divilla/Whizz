@@ -64,10 +64,23 @@ namespace WhizzSchema
             return schemaName == DefaultSchema ? Quote(relationName) : $"{Quote(schemaName)}.{Quote(relationName)}";
         }
 
+        public string GetEscapedRelationName(string relationName, string schemaName)
+        {
+            return schemaName == DefaultSchema ? EscapedQuote(relationName) : $"{EscapedQuote(schemaName)}.{EscapedQuote(relationName)}";
+        }
+
         public string Quote(string value)
         {
             if (Regex.IsMatch(value, "[^a-z0-9_]") || Keywords.Contains(value))
                 return $"\"{value}\"";
+
+            return value;
+        }
+        
+        public string EscapedQuote(string value)
+        {
+            if (Regex.IsMatch(value, "[^a-z0-9_]") || Keywords.Contains(value))
+                return $"\\\"{value}\\\"";
 
             return value;
         }
@@ -291,7 +304,7 @@ ORDER BY
         {
             var sql = @"
 SELECT ns.nspname::text AS schema_name,
-       tc.relname::text AS relation_name,
+       tc.relname::text AS table_name,
        ic.relname::text AS index_name,
        array_agg(a.attname)::text[] AS column_names
 FROM pg_namespace ns
@@ -309,7 +322,7 @@ GROUP BY
     ic.relname::text
 ORDER BY 
     schema_name, 
-    relation_name, 
+    table_name, 
     index_name;
             ";
 

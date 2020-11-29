@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WhizzBuilder.Attributes
+namespace WhizzBase.Attributes
 {
     public class BaseAttribute : Attribute {}
 }

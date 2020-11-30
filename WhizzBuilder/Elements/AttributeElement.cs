@@ -12,7 +12,7 @@ namespace WhizzBuilder.Elements
             Values = values;
         }
 
-        private string _newLine = Program.Config.NewLineCharacter;
+        private string _newLine = Application.NewLineChar;
         
         [Required] private string Name { get; }
         private object[] Values { get; }

@@ -24,11 +24,11 @@ namespace WhizzSchema.Schema
         public bool IsGenerated { get; }
         public bool IsPrimaryKey { get; }
         public bool IsRequired { get; }
-        public bool IsUpdatable { get; }
+        public bool IsReadOnly { get; }
         public string ColumnComment { get; }
         public Type ClrType { get; }
 
-        public ColumnSchema(string schemaName, string relationName, string columnName, short position, uint typeOid, string dataType, string typeType, int size, int modifier, int dimension, int? characterMaximumLength, int? numericPrecision, int? numericScale, string[] enumValues, string defaultValue, bool isNotNull, bool isGenerated, bool isPrimaryKey, bool isRequired, bool isUpdatable, string columnComment, Type clrType)
+        public ColumnSchema(string schemaName, string relationName, string columnName, short position, uint typeOid, string dataType, string typeType, int size, int modifier, int dimension, int? characterMaximumLength, int? numericPrecision, int? numericScale, string[] enumValues, string defaultValue, bool isNotNull, bool isGenerated, bool isPrimaryKey, bool isRequired, bool isReadOnly, string columnComment, Type clrType)
         {
             SchemaName = schemaName;
             RelationName = relationName;
@@ -49,7 +49,7 @@ namespace WhizzSchema.Schema
             IsGenerated = isGenerated;
             IsPrimaryKey = isPrimaryKey;
             IsRequired = isRequired;
-            IsUpdatable = isUpdatable;
+            IsReadOnly = isReadOnly;
             ColumnComment = columnComment;
             ClrType = clrType;
         }

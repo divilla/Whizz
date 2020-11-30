@@ -42,6 +42,12 @@ namespace WhizzSchema
         public DbSchema(string connectionString)
         {
             _init(connectionString).Wait();
+
+            var relationSchema = GetRelationSchema("relations", "public");
+            var fields = relationSchema.ColumnNames.Select(s => $"{s} AS \"{s.ToCamelCase()}\"");
+            var sql = $"SELECT json_agg(t) FROM (SELECT {string.Join(", ", fields)} FROM relations) t";
+            var command = new NpgsqlCommand(sql, _connection);
+            Console.WriteLine(command.ExecuteScalar());
         }
 
         public bool SchemaExists(string schemaName)
@@ -54,7 +60,7 @@ namespace WhizzSchema
             return SchemaExists(schemaName) && Schemas[schemaName].Relations.ContainsKey(relationName);
         }
 
-        public RelationSchema GetRelationSchema(string relationName, string schemaName)
+        public RelationSchema GetRelationSchema(string relationName, string schemaName = DefaultSchema)
         {
             return Schemas[schemaName].Relations[relationName];
         }
@@ -222,17 +228,20 @@ SELECT
         ELSE false
         END::bool                                                                                       AS is_primary_key,
     CASE
-        WHEN (CAST(pg_get_expr(ad.adbin, ad.adrelid) AS text) IS NOT NULL) 
+        WHEN CAST(pg_get_expr(ad.adbin, ad.adrelid) AS text) IS NOT NULL
             OR coalesce(pg_get_expr(ad.adbin, ad.adrelid) ~ 'nextval', false)
             {generated} THEN false
         ELSE true
         END::bool                                                                                       AS is_required,
     CASE
+        WHEN coalesce(pg_get_expr(ad.adbin, ad.adrelid) ~ 'nextval',false)
+            {generated}
+            OR (t.typname = 'uuid' AND CAST(pg_get_expr(ad.adbin, ad.adrelid) AS text) IS NOT NULL) THEN true
         WHEN (c.relkind = ANY (ARRAY ['r', 'p'])) 
             OR (c.relkind = ANY (ARRAY ['v', 'f'])) 
-            AND pg_column_is_updatable(c.oid::regclass, a.attnum, false) THEN true
-            ELSE false
-            END::bool                                                                                   AS is_updatable,
+            AND pg_column_is_updatable(c.oid::regclass, a.attnum, false) THEN false
+            ELSE true
+            END::bool                                                                                   AS is_readonly,
     pg_catalog.col_description(c.oid, a.attnum)                                                         AS column_comment
 FROM
     pg_class c
@@ -454,11 +463,11 @@ ORDER BY
                             types.Add(type);
                     }
 
-                    foreach (var type in TypeHelper.FindNullableTypes(types))
-                    {
-                        if (!types.Contains(type))
-                            types.Add(type);
-                    }
+                    // foreach (var type in TypeHelper.FindNullableTypes(types))
+                    // {
+                    //     if (!types.Contains(type))
+                    //         types.Add(type);
+                    // }
 
                     return types.ToImmutableArray();
                 });

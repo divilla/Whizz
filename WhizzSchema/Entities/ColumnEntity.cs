@@ -21,7 +21,7 @@
         public bool IsGenerated { get; set; }
         public bool IsPrimaryKey { get; set; }
         public bool IsRequired { get; set; }
-        public bool IsUpdatable { get; set; }
+        public bool IsReadOnly { get; set; }
         public string ColumnComment { get; set; }
     }
 }

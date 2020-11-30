@@ -62,7 +62,7 @@ namespace WhizzSchema.Schema
                         s.IsGenerated, 
                         s.IsPrimaryKey,
                         s.IsRequired,
-                        s.IsUpdatable,
+                        s.IsReadOnly,
                         s.ColumnComment, 
                         dbSchema.TypeEntities.ContainsKey(s.TypeOid) ? dbSchema.TypeEntities[s.TypeOid].Type : null))
                 .ToImmutableDictionary();

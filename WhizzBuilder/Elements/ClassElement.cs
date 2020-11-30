@@ -9,6 +9,7 @@ namespace WhizzBuilder.Elements
         protected override int Indents => 1;
 
         private AttributeElement _tableAttribute;
+        private AttributeElement _viewAttribute;
         private string _accessModifier = "public ";
         private string _classModifiers = "";
         private string _parentClass = "";
@@ -16,6 +17,12 @@ namespace WhizzBuilder.Elements
         public ClassElement AddTableAttribute(string value)
         {
             _tableAttribute = new AttributeElement("Table", value);
+            return this;
+        }
+
+        public ClassElement AddViewAttribute(string value)
+        {
+            _tableAttribute = new AttributeElement("View", value);
             return this;
         }
 

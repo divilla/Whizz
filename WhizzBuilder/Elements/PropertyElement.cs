@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using WhizzBuilder.Base;
 using WhizzBuilder.Constants;
 using WhizzBase.Extensions;
@@ -11,11 +12,7 @@ namespace WhizzBuilder.Elements
     {
         protected override int Indents => 2;
 
-        private AttributeElement _primaryKeyAttribute;
-        private AttributeElement _compositePrimaryKeyAttribute;
-        private AttributeElement _foreignKeyAttribute;
-        private List<AttributeElement> _uniqueIndexAttributes = new List<AttributeElement>();
-        private AttributeElement _columnAttribute;
+        private List<AttributeElement> _attributes = new List<AttributeElement>();
         [Required] private string _type;
         private string _accessModifier = "public ";
         private string _memberModifiers;
@@ -23,31 +20,43 @@ namespace WhizzBuilder.Elements
 
         public PropertyElement AddPrimaryKeyAttribute()
         {
-            _primaryKeyAttribute = new AttributeElement("PrimaryKey");
+            _attributes.Add(new AttributeElement("PrimaryKey"));
             return this;
         }
 
         public PropertyElement AddCompositePrimaryKeyAttribute()
         {
-            _compositePrimaryKeyAttribute = new AttributeElement("CompositePrimaryKey");
+            _attributes.Add(new AttributeElement("CompositePrimaryKey"));
+            return this;
+        }
+
+        public PropertyElement AddRequiredAttribute()
+        {
+            _attributes.Add(new AttributeElement("Required"));
+            return this;
+        }
+
+        public PropertyElement AddReadonlyAttribute()
+        {
+            _attributes.Add(new AttributeElement("Readonly"));
             return this;
         }
 
         public PropertyElement AddForeignKeyAttribute(string relationName, string columnName)
         {
-            _foreignKeyAttribute = new AttributeElement("ForeignKey", relationName, columnName);
+            _attributes.Add(new AttributeElement("ForeignKey", relationName, columnName));
             return this;
         }
 
         public PropertyElement AddUniqueIndexAttribute(string indexName)
         {
-            _uniqueIndexAttributes.Add(new AttributeElement("UniqueIndex", indexName));
+            _attributes.Add(new AttributeElement("UniqueIndex", indexName));
             return this;
         }
 
         public PropertyElement AddColumnAttribute(string name, short position)
         {
-            _columnAttribute = new AttributeElement("Column", name, position);
+            _attributes.Add(new AttributeElement("Column", name, position));
             return this;
         }
 
@@ -113,17 +122,7 @@ namespace WhizzBuilder.Elements
 
         private string BuildAttributes()
         {
-            var attributes = "";
-            attributes += _primaryKeyAttribute == null ? "" : Indentation + _primaryKeyAttribute.Build();
-            attributes += _compositePrimaryKeyAttribute == null ? "" : Indentation + _compositePrimaryKeyAttribute.Build();
-            attributes += _foreignKeyAttribute == null ? "" : Indentation + _foreignKeyAttribute.Build();
-            foreach (var attribute in _uniqueIndexAttributes)
-            {
-                attributes += Indentation + attribute.Build();
-            }
-            attributes += _columnAttribute == null ? "" : Indentation + _columnAttribute.Build();
-
-            return attributes;
+            return _attributes.Aggregate("", (current, attribute) => current + (Indentation + attribute.Build()));
         }
     }
 }

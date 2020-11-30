@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using WhizzSchema;
-using WhizzSchema.Interfaces;
 
 namespace WhizzBuilder
 {
@@ -10,7 +9,7 @@ namespace WhizzBuilder
         {
             var builder = new ContainerBuilder();
             builder.Register(e => config);
-            builder.Register<IDbSchema>(e => new DbSchema(config.ConnectionString));
+            builder.AddWhizzSchema(config.ConnectionString);
             builder.RegisterType<Application>().AsSelf();
             return builder.Build();
         }

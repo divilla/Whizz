@@ -42,69 +42,65 @@ namespace WhizzBuilder
                 {
                     n.Name(_config.Namespace);
 
-                    foreach (var schema in _schema.Schemas.Values)
+                    foreach (var relation in _schema.RelationEntities)
                     {
-                        foreach (var relation in schema.Relations.Values)
+                        n.AddClass(c =>
                         {
-                            n.AddClass(c =>
+                            if (relation.Kind == "v" || relation.Kind == "m")
+                                c.AddViewAttribute(_schema.EscapedQuotedRelationName(relation.RelationName, relation.SchemaName));
+                            else
+                                c.AddTableAttribute(_schema.EscapedQuotedRelationName(relation.RelationName, relation.SchemaName));
+                            
+                            c.Name(relation.SchemaName == DbSchema.DefaultSchema
+                                ? $"{relation.RelationName.ToPascalCase()}"
+                                : $"{relation.SchemaName.ToPascalCase()}{relation.RelationName.ToPascalCase()}");
+
+                            if (_config.AddPartialModifier)
+                                c.ClassModifiers(m => m.Partial);
+
+                            if (_config.BaseEntityClass != null)
+                                c.AddBaseClass(_config.BaseEntityClass);
+
+                            foreach (var column in _schema.GetColumns(relation.RelationName, relation.SchemaName))
                             {
-                                if (relation.Kind == "v" || relation.Kind == "m")
-                                    c.AddViewAttribute(_schema.GetEscapedRelationName(relation.RelationName, relation.SchemaName));
-                                else
-                                    c.AddTableAttribute(_schema.GetEscapedRelationName(relation.RelationName, relation.SchemaName));
-                                
-                                c.Name(relation.SchemaName == DbSchema.DefaultSchema
-                                    ? $"{relation.RelationName.ToPascalCase()}"
-                                    : $"{relation.SchemaName.ToPascalCase()}{relation.RelationName.ToPascalCase()}");
-
-                                if (_config.AddPartialModifier)
-                                    c.ClassModifiers(m => m.Partial);
-
-                                if (_config.BaseEntityClass != null)
-                                    c.AddBaseClass(_config.BaseEntityClass);
-
-                                foreach (var column in relation.Columns.Values.OrderBy(o => o.Position))
+                                c.AddProperty(p =>
                                 {
-                                    c.AddProperty(p =>
+                                    if (column.IsPrimaryKey)
+                                        p.AddPrimaryKeyAttribute();
+
+                                    if (column.IsRequired && relation.Kind != "v" && relation.Kind != "m")
+                                        p.AddRequiredAttribute();
+                                    else if (column.IsReadOnly || relation.Kind == "v" || relation.Kind == "m")
+                                        p.AddReadonlyAttribute();
+
+                                    if (column.CharacterMaximumLength != null && relation.Kind != "v" && relation.Kind != "m")
+                                        p.AddLengthAttribute((int) column.CharacterMaximumLength);
+
+                                    foreach (var foreignKey in _schema.GetForeignKeys(relation.RelationName, relation.SchemaName))
                                     {
-                                        if (relation.PrimaryKeyColumns.Length == 1 && column.IsPrimaryKey)
-                                            p.AddPrimaryKeyAttribute();
-                                        else if (relation.PrimaryKeyColumns.Length > 1 && column.IsPrimaryKey)
-                                            p.AddCompositePrimaryKeyAttribute();
+                                        p.AddForeignKeyAttribute(
+                                            _schema.EscapedQuotedRelationName(foreignKey.PrimaryKeyTableName, foreignKey.PrimaryKeySchemaName),
+                                            _schema.EscapedQuote(foreignKey.PrimaryKeyColumnName));
+                                    }
 
-                                        if (column.IsRequired && relation.Kind != "v" && relation.Kind != "m")
-                                            p.AddRequiredAttribute();
-                                        else if (column.IsReadOnly || relation.Kind == "v" || relation.Kind == "m")
-                                            p.AddReadonlyAttribute();
+                                    var uniqueIndexes = _schema.GetUniqueIndexes(relation.RelationName, relation.SchemaName);
 
-                                        foreach (var foreignKey in relation.ForeignKeyColumns
-                                            .Where(q => q.ColumnName == column.ColumnName))
-                                        {
-                                            p.AddForeignKeyAttribute(
-                                                _schema.GetEscapedRelationName(foreignKey.PrimaryKeyTableName, foreignKey.PrimaryKeySchemaName),
-                                                _schema.EscapedQuote(foreignKey.PrimaryKeyColumnName));
-                                        }
+                                    foreach (var uniqueIndex in _schema.GetUniqueIndexes(relation.RelationName, relation.SchemaName).Where(q => q.ColumnNames.Contains(column.ColumnName)))
+                                    {
+                                        p.AddUniqueIndexAttribute(_schema.EscapedQuote(uniqueIndex.IndexName));
+                                    }
 
-                                        foreach (var uniqueIndex in relation.UniqueIndexes
-                                            .Where(q => q.ColumnNames.Contains(column.ColumnName)))
-                                        {
-                                            p.AddUniqueIndexAttribute(_schema.EscapedQuote(uniqueIndex.IndexName));
-                                        }
+                                    p.AddColumnAttribute(_schema.EscapedQuote(column.ColumnName), column.Position);
 
-                                        p.AddColumnAttribute(_schema.EscapedQuote(column.ColumnName), column.Position);
+                                    p.Name(column.ColumnName.ToPascalCase());
 
-                                        p.Name(column.ColumnName.ToPascalCase());
-
-                                        p.Type(column.ClrType != null 
-                                            ? column.ClrType.ToKeywordName().AddArrayDimension(column.Dimension) 
-                                            : typeof(string).ToKeywordName());
-                                        
-                                        if (_config.MarkDirty && relation.Kind != "v" && relation.Kind != "m")
-                                            p.MarkDirty();
-                                    });
-                                }
-                            });
-                        }
+                                    p.Type(_schema.GetTypeName(column));
+                                    
+                                    if (_config.MarkDirty && relation.Kind != "v" && relation.Kind != "m")
+                                        p.MarkDirty();
+                                });
+                            }
+                        });
                     }
                 });
             });

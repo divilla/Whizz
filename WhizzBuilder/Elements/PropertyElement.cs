@@ -42,6 +42,12 @@ namespace WhizzBuilder.Elements
             return this;
         }
 
+        public PropertyElement AddLengthAttribute(int max)
+        {
+            _attributes.Add(new AttributeElement("Length", max));
+            return this;
+        }
+
         public PropertyElement AddForeignKeyAttribute(string relationName, string columnName)
         {
             _attributes.Add(new AttributeElement("ForeignKey", relationName, columnName));

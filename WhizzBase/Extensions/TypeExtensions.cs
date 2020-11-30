@@ -26,26 +26,15 @@ namespace WhizzBase.Extensions
             {typeof(ushort), "ushort"},
             {typeof(object), "object"},
             {typeof(string), "string"},
-            {typeof(bool[]), "bool[]"},
-            {typeof(byte[]), "byte[]"},
-            {typeof(sbyte[]), "sbyte[]"},
-            {typeof(char[]), "char[]"},
-            {typeof(decimal[]), "decimal[]"},
-            {typeof(double[]), "double[]"},
-            {typeof(float[]), "float[]"},
-            {typeof(int[]), "int[]"},
-            {typeof(uint[]), "uint[]"},
-            {typeof(long[]), "long[]"},
-            {typeof(ulong[]), "ulong[]"},
-            {typeof(short[]), "short[]"},
-            {typeof(ushort[]), "ushort[]"},
-            {typeof(object[]), "object[]"},
-            {typeof(string[]), "string[]"},
         };
         
-        public static string ToKeywordName(this Type type)
+        public static string ToKeywordName(this Type type, int dimension = 0)
         {
-            return _typesMap.ContainsKey(type) ? _typesMap[type] : type.Name;
+            var name = _typesMap.ContainsKey(type) ? _typesMap[type] : type.Name;
+            for (var i = 1; i <= dimension; i++)
+                name += "[]";
+
+            return name;
         }
         
         public static List<Type> FindNullableTypes(IEnumerable<Type> types)

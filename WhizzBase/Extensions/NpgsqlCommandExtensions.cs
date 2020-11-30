@@ -8,6 +8,35 @@ namespace WhizzBase.Extensions
 {
     public static class NpgsqlCommandExtensions
     {
+
+        public static ICollection<T> Query<T>(this NpgsqlCommand command, bool prepare = false)
+            where T : class, new()
+        {
+            if (prepare)
+                command.Prepare();
+            
+            var reader = command.ExecuteReader();
+            var mapper = EntityMapper.GetReaderMapper<T>(reader);
+            var result = new List<T>();
+
+            while (reader.Read())
+            {
+                var entity = new T();
+                foreach (var columnName in mapper.ColumnMaps.Keys)
+                {
+                    var value = reader[columnName];
+                    if (value is DBNull) continue;
+                    mapper.ColumnMaps[columnName].Set(entity, value);
+                }
+                
+                result.Add(entity);
+            }
+            reader.Close();
+            command.Dispose();
+
+            return result;
+        }
+
         public static async Task<ICollection<T>> QueryAsync<T>(this NpgsqlCommand command, bool prepare = false)
             where T : class, new()
         {

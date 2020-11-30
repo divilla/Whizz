@@ -8,21 +8,20 @@ namespace WhizzBuilder.Elements
     {
         protected override int Indents => 1;
 
-        private AttributeElement _tableAttribute;
-        private AttributeElement _viewAttribute;
+        private AttributeElement _tableViewAttribute;
         private string _accessModifier = "public ";
         private string _classModifiers = "";
         private string _parentClass = "";
 
         public ClassElement AddTableAttribute(string value)
         {
-            _tableAttribute = new AttributeElement("Table", value);
+            _tableViewAttribute = new AttributeElement("Table", value);
             return this;
         }
 
         public ClassElement AddViewAttribute(string value)
         {
-            _tableAttribute = new AttributeElement("View", value);
+            _tableViewAttribute = new AttributeElement("View", value);
             return this;
         }
 
@@ -70,8 +69,8 @@ namespace WhizzBuilder.Elements
         
         public override string Build()
         {
-            return _tableAttribute != null ? @$"
-{Indentation}{_tableAttribute.NoNewLine().Build()}
+            return _tableViewAttribute != null ? @$"
+{Indentation}{_tableViewAttribute.NoNewLine().Build()}
 {Indentation}{_accessModifier}{_classModifiers}class {_name}{_parentClass}
 {Indentation}{{{base.Build()}{Indentation}}}
 " : @$"

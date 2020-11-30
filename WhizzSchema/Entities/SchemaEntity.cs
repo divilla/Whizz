@@ -2,9 +2,17 @@
 {
     public class SchemaEntity
     {
-        public string SchemaName { get; set; }
-        public string SchemaOwner { get; set; }
-        public bool CanUse { get; set; }
-        public bool CanCreate { get; set; }
+        public SchemaEntity(string schemaName, string schemaOwner, bool canUse, bool canCreate)
+        {
+            SchemaName = schemaName;
+            SchemaOwner = schemaOwner;
+            CanUse = canUse;
+            CanCreate = canCreate;
+        }
+
+        public string SchemaName { get; }
+        public string SchemaOwner { get; }
+        public bool CanUse { get; }
+        public bool CanCreate { get; }
     }
 }

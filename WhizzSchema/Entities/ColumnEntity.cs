@@ -1,27 +1,54 @@
-﻿namespace WhizzSchema.Entities
+﻿using System;
+
+namespace WhizzSchema.Entities
 {
     public class ColumnEntity
     {
-        public string SchemaName { get; set; }
-        public string RelationName { get; set; }
-        public string ColumnName { get; set; }
-        public short Position { get; set; }
-        public uint TypeOid { get; set; }
-        public string DataType { get; set; }
-        public string TypeType { get; set; }
-        public int Size { get; set; }
-        public int Modifier { get; set; }
-        public int Dimension { get; set; }
-        public int? CharacterMaximumLength { get; set; }
-        public int? NumericPrecision { get; set; }
-        public int? NumericScale { get; set; }
-        public string[] EnumValues { get; set; }
-        public string DefaultValue { get; set; }
-        public bool IsNotNull { get; set; }
-        public bool IsGenerated { get; set; }
-        public bool IsPrimaryKey { get; set; }
-        public bool IsRequired { get; set; }
-        public bool IsReadOnly { get; set; }
-        public string ColumnComment { get; set; }
+        public ColumnEntity(string schemaName, string relationName, string columnName, short position, uint typeOid, string dataType, string typeType, int size, int modifier, int dimension, int? characterMaximumLength, int? numericPrecision, int? numericScale, string[] enumValues, string defaultValue, bool isNotNull, bool isGenerated, bool isPrimaryKey, bool isRequired, bool isReadOnly, string columnComment)
+        {
+            SchemaName = schemaName;
+            RelationName = relationName;
+            ColumnName = columnName;
+            Position = position;
+            TypeOid = typeOid;
+            DataType = dataType;
+            TypeType = typeType;
+            Size = size;
+            Modifier = modifier;
+            Dimension = dimension;
+            CharacterMaximumLength = characterMaximumLength;
+            NumericPrecision = numericPrecision;
+            NumericScale = numericScale;
+            EnumValues = enumValues;
+            DefaultValue = defaultValue;
+            IsNotNull = isNotNull;
+            IsGenerated = isGenerated;
+            IsPrimaryKey = isPrimaryKey;
+            IsRequired = isRequired;
+            IsReadOnly = isReadOnly;
+            ColumnComment = columnComment;
+        }
+
+        public string SchemaName { get; }
+        public string RelationName { get; }
+        public string ColumnName { get; }
+        public short Position { get; }
+        public uint TypeOid { get; }
+        public string DataType { get; }
+        public string TypeType { get; }
+        public int Size { get; }
+        public int Modifier { get; }
+        public int Dimension { get; }
+        public int? CharacterMaximumLength { get; }
+        public int? NumericPrecision { get; }
+        public int? NumericScale { get; }
+        public string[] EnumValues { get; }
+        public string DefaultValue { get; }
+        public bool IsNotNull { get; }
+        public bool IsGenerated { get; }
+        public bool IsPrimaryKey { get; }
+        public bool IsRequired { get; }
+        public bool IsReadOnly { get; }
+        public string ColumnComment { get; }
     }
 }

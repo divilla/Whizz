@@ -1,12 +1,12 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Autofac;
 using WhizzSchema.Interfaces;
 
 namespace WhizzSchema
 {
     public static class WhizzSchemaStartup
     {
-        public static void AddWhizzSchema(this IServiceCollection services, string connectionString) {
-            services.AddSingleton<IDbSchema>(o => new DbSchema(connectionString));
+        public static void AddWhizzSchema(this ContainerBuilder builder, string connectionString) {
+            builder.Register<IDbSchema>(o => new DbSchema(connectionString));
         }
     }
 }

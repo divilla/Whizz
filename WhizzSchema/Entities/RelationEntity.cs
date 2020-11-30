@@ -2,13 +2,25 @@
 {
     public class RelationEntity
     {
-        public string SchemaName { get; set; }
-        public string RelationName { get; set; }
-        public string RelationOwner { get; set; }
-        public string RelationKind { get; set; }
-        public bool CanSelect { get; set; }
-        public bool CanInsert { get; set; }
-        public bool CanUpdate { get; set; }
-        public bool CanDelete { get; set; }
+        public RelationEntity(string schemaName, string relationName, string owner, string kind, bool canSelect, bool canInsert, bool canUpdate, bool canDelete)
+        {
+            SchemaName = schemaName;
+            RelationName = relationName;
+            Owner = owner;
+            Kind = kind;
+            CanSelect = canSelect;
+            CanInsert = canInsert;
+            CanUpdate = canUpdate;
+            CanDelete = canDelete;
+        }
+
+        public string SchemaName { get; }
+        public string RelationName { get; }
+        public string Owner { get; }
+        public string Kind { get; }
+        public bool CanSelect { get; }
+        public bool CanInsert { get; }
+        public bool CanUpdate { get; }
+        public bool CanDelete { get; }
     }
 }

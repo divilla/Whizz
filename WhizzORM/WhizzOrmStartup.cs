@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
-using WhizzORM.Context;
-using WhizzORM.Interfaces;
+using WhizzSchema;
+using WhizzSchema.Interfaces;
 
 namespace WhizzORM
 {
@@ -9,8 +9,8 @@ namespace WhizzORM
     {
         public static void AddWhizzOrm(this IServiceCollection services, string connectionString)
         {
-            services.AddSingleton<IDbContext, DbContext>();
             services.AddScoped(config => new NpgsqlConnection(connectionString));
+            services.AddSingleton<IDbSchema>(new DbSchema(connectionString));
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace WhizzDomain
+﻿namespace WhizzApplication
 {
     public class Query
     {

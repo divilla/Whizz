@@ -9,42 +9,6 @@ namespace Domain
     [Table("auth.users")]
     public partial class AuthUsers : BaseEntity
     {
-        [Column("access_failed_count", 6)]
-        public short AccessFailedCount
-        {
-            get => _accessFailedCount;
-            set
-            {
-                _accessFailedCount = value;
-                MarkDirty("AccessFailedCount");
-            }
-        }
-        private short _accessFailedCount;
-
-        [Column("active", 10)]
-        public bool Active
-        {
-            get => _active;
-            set
-            {
-                _active = value;
-                MarkDirty("Active");
-            }
-        }
-        private bool _active;
-
-        [Column("email_confirmed", 5)]
-        public bool EmailConfirmed
-        {
-            get => _emailConfirmed;
-            set
-            {
-                _emailConfirmed = value;
-                MarkDirty("EmailConfirmed");
-            }
-        }
-        private bool _emailConfirmed;
-
         [PrimaryKey]
         [Column("id", 1)]
         public Guid Id
@@ -58,42 +22,18 @@ namespace Domain
         }
         private Guid _id;
 
-        [Column("locked", 9)]
-        public bool Locked
-        {
-            get => _locked;
-            set
-            {
-                _locked = value;
-                MarkDirty("Locked");
-            }
-        }
-        private bool _locked;
-
-        [Column("lockout_enabled", 7)]
-        public bool LockoutEnabled
-        {
-            get => _lockoutEnabled;
-            set
-            {
-                _lockoutEnabled = value;
-                MarkDirty("LockoutEnabled");
-            }
-        }
-        private bool _lockoutEnabled;
-
         [Required]
-        [Column("lockout_end", 8)]
-        public NpgsqlDateTime LockoutEnd
+        [Column("username", 2)]
+        public string Username
         {
-            get => _lockoutEnd;
+            get => _username;
             set
             {
-                _lockoutEnd = value;
-                MarkDirty("LockoutEnd");
+                _username = value;
+                MarkDirty("Username");
             }
         }
-        private NpgsqlDateTime _lockoutEnd;
+        private string _username;
 
         [Required]
         [Column("password", 3)]
@@ -120,6 +60,79 @@ namespace Domain
         }
         private string[] _roles;
 
+        [Column("email_confirmed", 5)]
+        public bool EmailConfirmed
+        {
+            get => _emailConfirmed;
+            set
+            {
+                _emailConfirmed = value;
+                MarkDirty("EmailConfirmed");
+            }
+        }
+        private bool _emailConfirmed;
+
+        [Column("access_failed_count", 6)]
+        public short AccessFailedCount
+        {
+            get => _accessFailedCount;
+            set
+            {
+                _accessFailedCount = value;
+                MarkDirty("AccessFailedCount");
+            }
+        }
+        private short _accessFailedCount;
+
+        [Column("lockout_enabled", 7)]
+        public bool LockoutEnabled
+        {
+            get => _lockoutEnabled;
+            set
+            {
+                _lockoutEnabled = value;
+                MarkDirty("LockoutEnabled");
+            }
+        }
+        private bool _lockoutEnabled;
+
+        [Required]
+        [Column("lockout_end", 8)]
+        public NpgsqlDateTime LockoutEnd
+        {
+            get => _lockoutEnd;
+            set
+            {
+                _lockoutEnd = value;
+                MarkDirty("LockoutEnd");
+            }
+        }
+        private NpgsqlDateTime _lockoutEnd;
+
+        [Column("locked", 9)]
+        public bool Locked
+        {
+            get => _locked;
+            set
+            {
+                _locked = value;
+                MarkDirty("Locked");
+            }
+        }
+        private bool _locked;
+
+        [Column("active", 10)]
+        public bool Active
+        {
+            get => _active;
+            set
+            {
+                _active = value;
+                MarkDirty("Active");
+            }
+        }
+        private bool _active;
+
         [Required]
         [Column("tstarr", 11)]
         public int[] Tstarr
@@ -132,19 +145,6 @@ namespace Domain
             }
         }
         private int[] _tstarr;
-
-        [Required]
-        [Column("username", 2)]
-        public string Username
-        {
-            get => _username;
-            set
-            {
-                _username = value;
-                MarkDirty("Username");
-            }
-        }
-        private string _username;
     }
 
     [Table("\"__EFMigrationsHistory\"")]
@@ -225,46 +225,20 @@ namespace Domain
     [Table("identity_device_code")]
     public partial class IdentityDeviceCode : BaseEntity
     {
+        [PrimaryKey]
         [Required]
         [Length(200)]
-        [Column("client_id", 4)]
-        public string ClientId
+        [Column("user_code", 1)]
+        public string UserCode
         {
-            get => _clientId;
+            get => _userCode;
             set
             {
-                _clientId = value;
-                MarkDirty("ClientId");
+                _userCode = value;
+                MarkDirty("UserCode");
             }
         }
-        private string _clientId;
-
-        [Required]
-        [Column("creation_time", 5)]
-        public NpgsqlDateTime CreationTime
-        {
-            get => _creationTime;
-            set
-            {
-                _creationTime = value;
-                MarkDirty("CreationTime");
-            }
-        }
-        private NpgsqlDateTime _creationTime;
-
-        [Required]
-        [Length(50000)]
-        [Column("data", 7)]
-        public string Data
-        {
-            get => _data;
-            set
-            {
-                _data = value;
-                MarkDirty("Data");
-            }
-        }
-        private string _data;
+        private string _userCode;
 
         [Required]
         [Length(200)]
@@ -282,19 +256,6 @@ namespace Domain
         private string _deviceCode;
 
         [Required]
-        [Column("expiration", 6)]
-        public NpgsqlDateTime Expiration
-        {
-            get => _expiration;
-            set
-            {
-                _expiration = value;
-                MarkDirty("Expiration");
-            }
-        }
-        private NpgsqlDateTime _expiration;
-
-        [Required]
         [Length(200)]
         [Column("subject_id", 3)]
         public string SubjectId
@@ -308,25 +269,6 @@ namespace Domain
         }
         private string _subjectId;
 
-        [PrimaryKey]
-        [Required]
-        [Length(200)]
-        [Column("user_code", 1)]
-        public string UserCode
-        {
-            get => _userCode;
-            set
-            {
-                _userCode = value;
-                MarkDirty("UserCode");
-            }
-        }
-        private string _userCode;
-    }
-
-    [Table("identity_persisted_grant")]
-    public partial class IdentityPersistedGrant : BaseEntity
-    {
         [Required]
         [Length(200)]
         [Column("client_id", 4)]
@@ -355,20 +297,6 @@ namespace Domain
         private NpgsqlDateTime _creationTime;
 
         [Required]
-        [Length(50000)]
-        [Column("data", 7)]
-        public string Data
-        {
-            get => _data;
-            set
-            {
-                _data = value;
-                MarkDirty("Data");
-            }
-        }
-        private string _data;
-
-        [Required]
         [Column("expiration", 6)]
         public NpgsqlDateTime Expiration
         {
@@ -381,6 +309,24 @@ namespace Domain
         }
         private NpgsqlDateTime _expiration;
 
+        [Required]
+        [Length(50000)]
+        [Column("data", 7)]
+        public string Data
+        {
+            get => _data;
+            set
+            {
+                _data = value;
+                MarkDirty("Data");
+            }
+        }
+        private string _data;
+    }
+
+    [Table("identity_persisted_grant")]
+    public partial class IdentityPersistedGrant : BaseEntity
+    {
         [PrimaryKey]
         [Required]
         [Length(200)]
@@ -397,6 +343,20 @@ namespace Domain
         private string _key;
 
         [Required]
+        [Length(50)]
+        [Column("type", 2)]
+        public string Type
+        {
+            get => _type;
+            set
+            {
+                _type = value;
+                MarkDirty("Type");
+            }
+        }
+        private string _type;
+
+        [Required]
         [Length(200)]
         [Column("subject_id", 3)]
         public string SubjectId
@@ -411,36 +371,63 @@ namespace Domain
         private string _subjectId;
 
         [Required]
-        [Length(50)]
-        [Column("type", 2)]
-        public string Type
+        [Length(200)]
+        [Column("client_id", 4)]
+        public string ClientId
         {
-            get => _type;
+            get => _clientId;
             set
             {
-                _type = value;
-                MarkDirty("Type");
+                _clientId = value;
+                MarkDirty("ClientId");
             }
         }
-        private string _type;
+        private string _clientId;
+
+        [Required]
+        [Column("creation_time", 5)]
+        public NpgsqlDateTime CreationTime
+        {
+            get => _creationTime;
+            set
+            {
+                _creationTime = value;
+                MarkDirty("CreationTime");
+            }
+        }
+        private NpgsqlDateTime _creationTime;
+
+        [Required]
+        [Column("expiration", 6)]
+        public NpgsqlDateTime Expiration
+        {
+            get => _expiration;
+            set
+            {
+                _expiration = value;
+                MarkDirty("Expiration");
+            }
+        }
+        private NpgsqlDateTime _expiration;
+
+        [Required]
+        [Length(50000)]
+        [Column("data", 7)]
+        public string Data
+        {
+            get => _data;
+            set
+            {
+                _data = value;
+                MarkDirty("Data");
+            }
+        }
+        private string _data;
     }
 
     [Table("identity_role")]
     public partial class IdentityRole : BaseEntity
     {
-        [Required]
-        [Column("concurrency_stamp", 4)]
-        public string ConcurrencyStamp
-        {
-            get => _concurrencyStamp;
-            set
-            {
-                _concurrencyStamp = value;
-                MarkDirty("ConcurrencyStamp");
-            }
-        }
-        private string _concurrencyStamp;
-
         [PrimaryKey]
         [Required]
         [Column("id", 1)]
@@ -483,37 +470,24 @@ namespace Domain
             }
         }
         private string _normalizedName;
+
+        [Required]
+        [Column("concurrency_stamp", 4)]
+        public string ConcurrencyStamp
+        {
+            get => _concurrencyStamp;
+            set
+            {
+                _concurrencyStamp = value;
+                MarkDirty("ConcurrencyStamp");
+            }
+        }
+        private string _concurrencyStamp;
     }
 
     [Table("identity_role_claim")]
     public partial class IdentityRoleClaim : BaseEntity
     {
-        [Required]
-        [Column("claim_type", 3)]
-        public string ClaimType
-        {
-            get => _claimType;
-            set
-            {
-                _claimType = value;
-                MarkDirty("ClaimType");
-            }
-        }
-        private string _claimType;
-
-        [Required]
-        [Column("claim_value", 4)]
-        public string ClaimValue
-        {
-            get => _claimValue;
-            set
-            {
-                _claimValue = value;
-                MarkDirty("ClaimValue");
-            }
-        }
-        private string _claimValue;
-
         [PrimaryKey]
         [Column("id", 1)]
         public int Id
@@ -539,64 +513,37 @@ namespace Domain
             }
         }
         private Guid _roleId;
+
+        [Required]
+        [Column("claim_type", 3)]
+        public string ClaimType
+        {
+            get => _claimType;
+            set
+            {
+                _claimType = value;
+                MarkDirty("ClaimType");
+            }
+        }
+        private string _claimType;
+
+        [Required]
+        [Column("claim_value", 4)]
+        public string ClaimValue
+        {
+            get => _claimValue;
+            set
+            {
+                _claimValue = value;
+                MarkDirty("ClaimValue");
+            }
+        }
+        private string _claimValue;
     }
 
     [Table("identity_user")]
     public partial class IdentityUser : BaseEntity
     {
-        [Required]
-        [Column("access_failed_count", 15)]
-        public int AccessFailedCount
-        {
-            get => _accessFailedCount;
-            set
-            {
-                _accessFailedCount = value;
-                MarkDirty("AccessFailedCount");
-            }
-        }
-        private int _accessFailedCount;
-
-        [Required]
-        [Column("concurrency_stamp", 9)]
-        public string ConcurrencyStamp
-        {
-            get => _concurrencyStamp;
-            set
-            {
-                _concurrencyStamp = value;
-                MarkDirty("ConcurrencyStamp");
-            }
-        }
-        private string _concurrencyStamp;
-
-        [Required]
-        [Length(256)]
-        [Column("email", 4)]
-        public string Email
-        {
-            get => _email;
-            set
-            {
-                _email = value;
-                MarkDirty("Email");
-            }
-        }
-        private string _email;
-
-        [Required]
-        [Column("email_confirmed", 6)]
-        public bool EmailConfirmed
-        {
-            get => _emailConfirmed;
-            set
-            {
-                _emailConfirmed = value;
-                MarkDirty("EmailConfirmed");
-            }
-        }
-        private bool _emailConfirmed;
-
         [PrimaryKey]
         [Required]
         [Column("id", 1)]
@@ -612,44 +559,18 @@ namespace Domain
         private Guid _id;
 
         [Required]
-        [Column("lockout_enabled", 14)]
-        public bool LockoutEnabled
-        {
-            get => _lockoutEnabled;
-            set
-            {
-                _lockoutEnabled = value;
-                MarkDirty("LockoutEnabled");
-            }
-        }
-        private bool _lockoutEnabled;
-
-        [Required]
-        [Column("lockout_end", 13)]
-        public DateTimeOffset LockoutEnd
-        {
-            get => _lockoutEnd;
-            set
-            {
-                _lockoutEnd = value;
-                MarkDirty("LockoutEnd");
-            }
-        }
-        private DateTimeOffset _lockoutEnd;
-
-        [Required]
         [Length(256)]
-        [Column("normalized_email", 5)]
-        public string NormalizedEmail
+        [Column("user_name", 2)]
+        public string UserName
         {
-            get => _normalizedEmail;
+            get => _userName;
             set
             {
-                _normalizedEmail = value;
-                MarkDirty("NormalizedEmail");
+                _userName = value;
+                MarkDirty("UserName");
             }
         }
-        private string _normalizedEmail;
+        private string _userName;
 
         [Required]
         [Length(256)]
@@ -667,6 +588,47 @@ namespace Domain
         private string _normalizedUserName;
 
         [Required]
+        [Length(256)]
+        [Column("email", 4)]
+        public string Email
+        {
+            get => _email;
+            set
+            {
+                _email = value;
+                MarkDirty("Email");
+            }
+        }
+        private string _email;
+
+        [Required]
+        [Length(256)]
+        [Column("normalized_email", 5)]
+        public string NormalizedEmail
+        {
+            get => _normalizedEmail;
+            set
+            {
+                _normalizedEmail = value;
+                MarkDirty("NormalizedEmail");
+            }
+        }
+        private string _normalizedEmail;
+
+        [Required]
+        [Column("email_confirmed", 6)]
+        public bool EmailConfirmed
+        {
+            get => _emailConfirmed;
+            set
+            {
+                _emailConfirmed = value;
+                MarkDirty("EmailConfirmed");
+            }
+        }
+        private bool _emailConfirmed;
+
+        [Required]
         [Column("password_hash", 7)]
         public string PasswordHash
         {
@@ -678,6 +640,32 @@ namespace Domain
             }
         }
         private string _passwordHash;
+
+        [Required]
+        [Column("security_stamp", 8)]
+        public string SecurityStamp
+        {
+            get => _securityStamp;
+            set
+            {
+                _securityStamp = value;
+                MarkDirty("SecurityStamp");
+            }
+        }
+        private string _securityStamp;
+
+        [Required]
+        [Column("concurrency_stamp", 9)]
+        public string ConcurrencyStamp
+        {
+            get => _concurrencyStamp;
+            set
+            {
+                _concurrencyStamp = value;
+                MarkDirty("ConcurrencyStamp");
+            }
+        }
+        private string _concurrencyStamp;
 
         [Required]
         [Column("phone_number", 10)]
@@ -706,19 +694,6 @@ namespace Domain
         private bool _phoneNumberConfirmed;
 
         [Required]
-        [Column("security_stamp", 8)]
-        public string SecurityStamp
-        {
-            get => _securityStamp;
-            set
-            {
-                _securityStamp = value;
-                MarkDirty("SecurityStamp");
-            }
-        }
-        private string _securityStamp;
-
-        [Required]
         [Column("two_factor_enabled", 12)]
         public bool TwoFactorEnabled
         {
@@ -732,49 +707,48 @@ namespace Domain
         private bool _twoFactorEnabled;
 
         [Required]
-        [Length(256)]
-        [Column("user_name", 2)]
-        public string UserName
+        [Column("lockout_end", 13)]
+        public DateTimeOffset LockoutEnd
         {
-            get => _userName;
+            get => _lockoutEnd;
             set
             {
-                _userName = value;
-                MarkDirty("UserName");
+                _lockoutEnd = value;
+                MarkDirty("LockoutEnd");
             }
         }
-        private string _userName;
+        private DateTimeOffset _lockoutEnd;
+
+        [Required]
+        [Column("lockout_enabled", 14)]
+        public bool LockoutEnabled
+        {
+            get => _lockoutEnabled;
+            set
+            {
+                _lockoutEnabled = value;
+                MarkDirty("LockoutEnabled");
+            }
+        }
+        private bool _lockoutEnabled;
+
+        [Required]
+        [Column("access_failed_count", 15)]
+        public int AccessFailedCount
+        {
+            get => _accessFailedCount;
+            set
+            {
+                _accessFailedCount = value;
+                MarkDirty("AccessFailedCount");
+            }
+        }
+        private int _accessFailedCount;
     }
 
     [Table("identity_user_claim")]
     public partial class IdentityUserClaim : BaseEntity
     {
-        [Required]
-        [Column("claim_type", 3)]
-        public string ClaimType
-        {
-            get => _claimType;
-            set
-            {
-                _claimType = value;
-                MarkDirty("ClaimType");
-            }
-        }
-        private string _claimType;
-
-        [Required]
-        [Column("claim_value", 4)]
-        public string ClaimValue
-        {
-            get => _claimValue;
-            set
-            {
-                _claimValue = value;
-                MarkDirty("ClaimValue");
-            }
-        }
-        private string _claimValue;
-
         [PrimaryKey]
         [Column("id", 1)]
         public int Id
@@ -800,6 +774,32 @@ namespace Domain
             }
         }
         private Guid _userId;
+
+        [Required]
+        [Column("claim_type", 3)]
+        public string ClaimType
+        {
+            get => _claimType;
+            set
+            {
+                _claimType = value;
+                MarkDirty("ClaimType");
+            }
+        }
+        private string _claimType;
+
+        [Required]
+        [Column("claim_value", 4)]
+        public string ClaimValue
+        {
+            get => _claimValue;
+            set
+            {
+                _claimValue = value;
+                MarkDirty("ClaimValue");
+            }
+        }
+        private string _claimValue;
     }
 
     [Table("identity_user_login")]
@@ -820,19 +820,6 @@ namespace Domain
         }
         private string _loginProvider;
 
-        [Required]
-        [Column("provider_display_name", 3)]
-        public string ProviderDisplayName
-        {
-            get => _providerDisplayName;
-            set
-            {
-                _providerDisplayName = value;
-                MarkDirty("ProviderDisplayName");
-            }
-        }
-        private string _providerDisplayName;
-
         [PrimaryKey]
         [Required]
         [Length(128)]
@@ -847,6 +834,19 @@ namespace Domain
             }
         }
         private string _providerKey;
+
+        [Required]
+        [Column("provider_display_name", 3)]
+        public string ProviderDisplayName
+        {
+            get => _providerDisplayName;
+            set
+            {
+                _providerDisplayName = value;
+                MarkDirty("ProviderDisplayName");
+            }
+        }
+        private string _providerDisplayName;
 
         [Required]
         [Column("user_id", 4)]
@@ -867,6 +867,20 @@ namespace Domain
     {
         [PrimaryKey]
         [Required]
+        [Column("user_id", 1)]
+        public Guid UserId
+        {
+            get => _userId;
+            set
+            {
+                _userId = value;
+                MarkDirty("UserId");
+            }
+        }
+        private Guid _userId;
+
+        [PrimaryKey]
+        [Required]
         [Column("role_id", 2)]
         public Guid RoleId
         {
@@ -878,7 +892,11 @@ namespace Domain
             }
         }
         private Guid _roleId;
+    }
 
+    [Table("identity_user_token")]
+    public partial class IdentityUserToken : BaseEntity
+    {
         [PrimaryKey]
         [Required]
         [Column("user_id", 1)]
@@ -892,11 +910,7 @@ namespace Domain
             }
         }
         private Guid _userId;
-    }
 
-    [Table("identity_user_token")]
-    public partial class IdentityUserToken : BaseEntity
-    {
         [PrimaryKey]
         [Required]
         [Length(128)]
@@ -927,20 +941,6 @@ namespace Domain
         }
         private string _name;
 
-        [PrimaryKey]
-        [Required]
-        [Column("user_id", 1)]
-        public Guid UserId
-        {
-            get => _userId;
-            set
-            {
-                _userId = value;
-                MarkDirty("UserId");
-            }
-        }
-        private Guid _userId;
-
         [Required]
         [Column("value", 4)]
         public string Value
@@ -958,6 +958,32 @@ namespace Domain
     [Table("product")]
     public partial class Product : BaseEntity
     {
+        [PrimaryKey]
+        [Column("id", 1)]
+        public Guid Id
+        {
+            get => _id;
+            set
+            {
+                _id = value;
+                MarkDirty("Id");
+            }
+        }
+        private Guid _id;
+
+        [Required]
+        [Column("name", 2)]
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+                MarkDirty("Name");
+            }
+        }
+        private string _name;
+
         [Required]
         [Column("barcode", 3)]
         public string Barcode
@@ -984,32 +1010,6 @@ namespace Domain
         }
         private string _description;
 
-        [PrimaryKey]
-        [Column("id", 1)]
-        public Guid Id
-        {
-            get => _id;
-            set
-            {
-                _id = value;
-                MarkDirty("Id");
-            }
-        }
-        private Guid _id;
-
-        [Required]
-        [Column("name", 2)]
-        public string Name
-        {
-            get => _name;
-            set
-            {
-                _name = value;
-                MarkDirty("Name");
-            }
-        }
-        private string _name;
-
         [Required]
         [Column("rate", 5)]
         public decimal Rate
@@ -1028,24 +1028,8 @@ namespace Domain
     public partial class Relations : BaseEntity
     {
         [Readonly]
-        [Column("can_delete", 8)]
-        public bool CanDelete { get; set; }
-
-        [Readonly]
-        [Column("can_insert", 6)]
-        public bool CanInsert { get; set; }
-
-        [Readonly]
-        [Column("can_select", 5)]
-        public bool CanSelect { get; set; }
-
-        [Readonly]
-        [Column("can_update", 7)]
-        public bool CanUpdate { get; set; }
-
-        [Readonly]
-        [Column("relation_kind", 4)]
-        public string RelationKind { get; set; }
+        [Column("schema_name", 1)]
+        public string SchemaName { get; set; }
 
         [Readonly]
         [Column("relation_name", 2)]
@@ -1056,51 +1040,29 @@ namespace Domain
         public string RelationOwner { get; set; }
 
         [Readonly]
-        [Column("schema_name", 1)]
-        public string SchemaName { get; set; }
+        [Column("relation_kind", 4)]
+        public string RelationKind { get; set; }
+
+        [Readonly]
+        [Column("can_select", 5)]
+        public bool CanSelect { get; set; }
+
+        [Readonly]
+        [Column("can_insert", 6)]
+        public bool CanInsert { get; set; }
+
+        [Readonly]
+        [Column("can_update", 7)]
+        public bool CanUpdate { get; set; }
+
+        [Readonly]
+        [Column("can_delete", 8)]
+        public bool CanDelete { get; set; }
     }
 
     [Table("test")]
     public partial class Test : BaseEntity
     {
-        [Column("active", 8)]
-        public bool Active
-        {
-            get => _active;
-            set
-            {
-                _active = value;
-                MarkDirty("Active");
-            }
-        }
-        private bool _active;
-
-        [Required]
-        [Column("date", 7)]
-        public NpgsqlDate Date
-        {
-            get => _date;
-            set
-            {
-                _date = value;
-                MarkDirty("Date");
-            }
-        }
-        private NpgsqlDate _date;
-
-        [Required]
-        [Column("date_time", 6)]
-        public NpgsqlDateTime DateTime
-        {
-            get => _dateTime;
-            set
-            {
-                _dateTime = value;
-                MarkDirty("DateTime");
-            }
-        }
-        private NpgsqlDateTime _dateTime;
-
         [PrimaryKey]
         [Column("id", 1)]
         public Guid Id
@@ -1113,33 +1075,6 @@ namespace Domain
             }
         }
         private Guid _id;
-
-        [Required]
-        [Column("long_description", 3)]
-        public string LongDescription
-        {
-            get => _longDescription;
-            set
-            {
-                _longDescription = value;
-                MarkDirty("LongDescription");
-            }
-        }
-        private string _longDescription;
-
-        [Required]
-        [UniqueIndex("test_numeric_money_uindex")]
-        [Column("money", 5)]
-        public decimal Money
-        {
-            get => _money;
-            set
-            {
-                _money = value;
-                MarkDirty("Money");
-            }
-        }
-        private decimal _money;
 
         [Required]
         [Length(6)]
@@ -1157,6 +1092,19 @@ namespace Domain
         private string _name;
 
         [Required]
+        [Column("long_description", 3)]
+        public string LongDescription
+        {
+            get => _longDescription;
+            set
+            {
+                _longDescription = value;
+                MarkDirty("LongDescription");
+            }
+        }
+        private string _longDescription;
+
+        [Required]
         [UniqueIndex("test_numeric_money_uindex")]
         [Column("quantity", 4)]
         public decimal Quantity
@@ -1169,14 +1117,37 @@ namespace Domain
             }
         }
         private decimal _quantity;
-    }
 
-    [Table("test_2")]
-    public partial class Test2 : BaseEntity
-    {
         [Required]
-        [Column("date", 3)]
-        public NpgsqlDateTime Date
+        [UniqueIndex("test_numeric_money_uindex")]
+        [Column("money", 5)]
+        public decimal Money
+        {
+            get => _money;
+            set
+            {
+                _money = value;
+                MarkDirty("Money");
+            }
+        }
+        private decimal _money;
+
+        [Required]
+        [Column("date_time", 6)]
+        public NpgsqlDateTime DateTime
+        {
+            get => _dateTime;
+            set
+            {
+                _dateTime = value;
+                MarkDirty("DateTime");
+            }
+        }
+        private NpgsqlDateTime _dateTime;
+
+        [Required]
+        [Column("date", 7)]
+        public NpgsqlDate Date
         {
             get => _date;
             set
@@ -1185,8 +1156,24 @@ namespace Domain
                 MarkDirty("Date");
             }
         }
-        private NpgsqlDateTime _date;
+        private NpgsqlDate _date;
 
+        [Column("active", 8)]
+        public bool Active
+        {
+            get => _active;
+            set
+            {
+                _active = value;
+                MarkDirty("Active");
+            }
+        }
+        private bool _active;
+    }
+
+    [Table("test_2")]
+    public partial class Test2 : BaseEntity
+    {
         [Required]
         [Column("id", 1)]
         public int Id
@@ -1213,23 +1200,36 @@ namespace Domain
             }
         }
         private string _name;
+
+        [Required]
+        [Column("date", 3)]
+        public NpgsqlDateTime Date
+        {
+            get => _date;
+            set
+            {
+                _date = value;
+                MarkDirty("Date");
+            }
+        }
+        private NpgsqlDateTime _date;
     }
 
     [Table("test_foreign")]
     public partial class TestForeign : BaseEntity
     {
-        [Required]
-        [Column("arr", 3)]
-        public int[] Arr
+        [PrimaryKey]
+        [Column("id", 1)]
+        public Guid Id
         {
-            get => _arr;
+            get => _id;
             set
             {
-                _arr = value;
-                MarkDirty("Arr");
+                _id = value;
+                MarkDirty("Id");
             }
         }
-        private int[] _arr;
+        private Guid _id;
 
         [Required]
         [Column("fk", 2)]
@@ -1244,62 +1244,23 @@ namespace Domain
         }
         private Guid _fk;
 
-        [PrimaryKey]
-        [Column("id", 1)]
-        public Guid Id
+        [Required]
+        [Column("arr", 3)]
+        public int[] Arr
         {
-            get => _id;
+            get => _arr;
             set
             {
-                _id = value;
-                MarkDirty("Id");
+                _arr = value;
+                MarkDirty("Arr");
             }
         }
-        private Guid _id;
+        private int[] _arr;
     }
 
     [Table("todo_item")]
     public partial class TodoItem : BaseEntity
     {
-        [Required]
-        [Column("created", 9)]
-        public NpgsqlDateTime Created
-        {
-            get => _created;
-            set
-            {
-                _created = value;
-                MarkDirty("Created");
-            }
-        }
-        private NpgsqlDateTime _created;
-
-        [Required]
-        [Column("created_by", 8)]
-        public Guid CreatedBy
-        {
-            get => _createdBy;
-            set
-            {
-                _createdBy = value;
-                MarkDirty("CreatedBy");
-            }
-        }
-        private Guid _createdBy;
-
-        [Required]
-        [Column("done", 5)]
-        public bool Done
-        {
-            get => _done;
-            set
-            {
-                _done = value;
-                MarkDirty("Done");
-            }
-        }
-        private bool _done;
-
         [PrimaryKey]
         [Column("id", 1)]
         public int Id
@@ -1312,32 +1273,6 @@ namespace Domain
             }
         }
         private int _id;
-
-        [Required]
-        [Column("last_modified", 11)]
-        public NpgsqlDateTime LastModified
-        {
-            get => _lastModified;
-            set
-            {
-                _lastModified = value;
-                MarkDirty("LastModified");
-            }
-        }
-        private NpgsqlDateTime _lastModified;
-
-        [Required]
-        [Column("last_modified_by", 10)]
-        public Guid LastModifiedBy
-        {
-            get => _lastModifiedBy;
-            set
-            {
-                _lastModifiedBy = value;
-                MarkDirty("LastModifiedBy");
-            }
-        }
-        private Guid _lastModifiedBy;
 
         [Required]
         [Column("list_id", 2)]
@@ -1353,6 +1288,20 @@ namespace Domain
         private int _listId;
 
         [Required]
+        [Length(200)]
+        [Column("title", 3)]
+        public string Title
+        {
+            get => _title;
+            set
+            {
+                _title = value;
+                MarkDirty("Title");
+            }
+        }
+        private string _title;
+
+        [Required]
         [Column("note", 4)]
         public string Note
         {
@@ -1366,17 +1315,17 @@ namespace Domain
         private string _note;
 
         [Required]
-        [Column("priority", 7)]
-        public int Priority
+        [Column("done", 5)]
+        public bool Done
         {
-            get => _priority;
+            get => _done;
             set
             {
-                _priority = value;
-                MarkDirty("Priority");
+                _done = value;
+                MarkDirty("Done");
             }
         }
-        private int _priority;
+        private bool _done;
 
         [Required]
         [Column("reminder", 6)]
@@ -1392,8 +1341,90 @@ namespace Domain
         private NpgsqlDateTime _reminder;
 
         [Required]
+        [Column("priority", 7)]
+        public int Priority
+        {
+            get => _priority;
+            set
+            {
+                _priority = value;
+                MarkDirty("Priority");
+            }
+        }
+        private int _priority;
+
+        [Required]
+        [Column("created_by", 8)]
+        public Guid CreatedBy
+        {
+            get => _createdBy;
+            set
+            {
+                _createdBy = value;
+                MarkDirty("CreatedBy");
+            }
+        }
+        private Guid _createdBy;
+
+        [Required]
+        [Column("created", 9)]
+        public NpgsqlDateTime Created
+        {
+            get => _created;
+            set
+            {
+                _created = value;
+                MarkDirty("Created");
+            }
+        }
+        private NpgsqlDateTime _created;
+
+        [Required]
+        [Column("last_modified_by", 10)]
+        public Guid LastModifiedBy
+        {
+            get => _lastModifiedBy;
+            set
+            {
+                _lastModifiedBy = value;
+                MarkDirty("LastModifiedBy");
+            }
+        }
+        private Guid _lastModifiedBy;
+
+        [Required]
+        [Column("last_modified", 11)]
+        public NpgsqlDateTime LastModified
+        {
+            get => _lastModified;
+            set
+            {
+                _lastModified = value;
+                MarkDirty("LastModified");
+            }
+        }
+        private NpgsqlDateTime _lastModified;
+    }
+
+    [Table("todo_list")]
+    public partial class TodoList : BaseEntity
+    {
+        [PrimaryKey]
+        [Column("id", 1)]
+        public int Id
+        {
+            get => _id;
+            set
+            {
+                _id = value;
+                MarkDirty("Id");
+            }
+        }
+        private int _id;
+
+        [Required]
         [Length(200)]
-        [Column("title", 3)]
+        [Column("title", 2)]
         public string Title
         {
             get => _title;
@@ -1404,11 +1435,7 @@ namespace Domain
             }
         }
         private string _title;
-    }
 
-    [Table("todo_list")]
-    public partial class TodoList : BaseEntity
-    {
         [Required]
         [Column("color", 3)]
         public string Color
@@ -1421,6 +1448,19 @@ namespace Domain
             }
         }
         private string _color;
+
+        [Required]
+        [Column("created_by", 4)]
+        public Guid CreatedBy
+        {
+            get => _createdBy;
+            set
+            {
+                _createdBy = value;
+                MarkDirty("CreatedBy");
+            }
+        }
+        private Guid _createdBy;
 
         [Required]
         [Column("created", 5)]
@@ -1436,45 +1476,6 @@ namespace Domain
         private NpgsqlDateTime _created;
 
         [Required]
-        [Column("created_by", 4)]
-        public Guid CreatedBy
-        {
-            get => _createdBy;
-            set
-            {
-                _createdBy = value;
-                MarkDirty("CreatedBy");
-            }
-        }
-        private Guid _createdBy;
-
-        [PrimaryKey]
-        [Column("id", 1)]
-        public int Id
-        {
-            get => _id;
-            set
-            {
-                _id = value;
-                MarkDirty("Id");
-            }
-        }
-        private int _id;
-
-        [Required]
-        [Column("last_modified", 7)]
-        public NpgsqlDateTime LastModified
-        {
-            get => _lastModified;
-            set
-            {
-                _lastModified = value;
-                MarkDirty("LastModified");
-            }
-        }
-        private NpgsqlDateTime _lastModified;
-
-        [Required]
         [Column("last_modified_by", 6)]
         public Guid LastModifiedBy
         {
@@ -1488,18 +1489,17 @@ namespace Domain
         private Guid _lastModifiedBy;
 
         [Required]
-        [Length(200)]
-        [Column("title", 2)]
-        public string Title
+        [Column("last_modified", 7)]
+        public NpgsqlDateTime LastModified
         {
-            get => _title;
+            get => _lastModified;
             set
             {
-                _title = value;
-                MarkDirty("Title");
+                _lastModified = value;
+                MarkDirty("LastModified");
             }
         }
-        private string _title;
+        private NpgsqlDateTime _lastModified;
     }
 
     [Table("sch.relation_kind")]
@@ -1538,16 +1538,20 @@ namespace Domain
     public partial class WhizzForeignKeys : BaseEntity
     {
         [Readonly]
+        [Column("schema_name", 1)]
+        public string SchemaName { get; set; }
+
+        [Readonly]
+        [Column("table_name", 2)]
+        public string TableName { get; set; }
+
+        [Readonly]
         [Column("column_name", 3)]
         public string ColumnName { get; set; }
 
         [Readonly]
         [Column("constraint_name", 4)]
         public string ConstraintName { get; set; }
-
-        [Readonly]
-        [Column("primary_key_column_name", 7)]
-        public string PrimaryKeyColumnName { get; set; }
 
         [Readonly]
         [Column("primary_key_schema_name", 5)]
@@ -1558,36 +1562,16 @@ namespace Domain
         public string PrimaryKeyTableName { get; set; }
 
         [Readonly]
-        [Column("schema_name", 1)]
-        public string SchemaName { get; set; }
-
-        [Readonly]
-        [Column("table_name", 2)]
-        public string TableName { get; set; }
+        [Column("primary_key_column_name", 7)]
+        public string PrimaryKeyColumnName { get; set; }
     }
 
     [View("whizz.relations")]
     public partial class WhizzRelations : BaseEntity
     {
         [Readonly]
-        [Column("can_delete", 8)]
-        public bool CanDelete { get; set; }
-
-        [Readonly]
-        [Column("can_insert", 6)]
-        public bool CanInsert { get; set; }
-
-        [Readonly]
-        [Column("can_select", 5)]
-        public bool CanSelect { get; set; }
-
-        [Readonly]
-        [Column("can_update", 7)]
-        public bool CanUpdate { get; set; }
-
-        [Readonly]
-        [Column("relation_kind", 4)]
-        public string RelationKind { get; set; }
+        [Column("schema_name", 1)]
+        public string SchemaName { get; set; }
 
         [Readonly]
         [Column("relation_name", 2)]
@@ -1598,8 +1582,24 @@ namespace Domain
         public string RelationOwner { get; set; }
 
         [Readonly]
-        [Column("schema_name", 1)]
-        public string SchemaName { get; set; }
+        [Column("relation_kind", 4)]
+        public string RelationKind { get; set; }
+
+        [Readonly]
+        [Column("can_select", 5)]
+        public bool CanSelect { get; set; }
+
+        [Readonly]
+        [Column("can_insert", 6)]
+        public bool CanInsert { get; set; }
+
+        [Readonly]
+        [Column("can_update", 7)]
+        public bool CanUpdate { get; set; }
+
+        [Readonly]
+        [Column("can_delete", 8)]
+        public bool CanDelete { get; set; }
     }
 
     [View("whizz.schemas")]
@@ -1617,32 +1617,6 @@ namespace Domain
     [Table("whizz.transaction_entry")]
     public partial class WhizzTransactionEntry : BaseEntity
     {
-        [Required]
-        [Column("command", 2)]
-        public string Command
-        {
-            get => _command;
-            set
-            {
-                _command = value;
-                MarkDirty("Command");
-            }
-        }
-        private string _command;
-
-        [Required]
-        [Column("executed", 6)]
-        public long Executed
-        {
-            get => _executed;
-            set
-            {
-                _executed = value;
-                MarkDirty("Executed");
-            }
-        }
-        private long _executed;
-
         [Column("id", 1)]
         public long Id
         {
@@ -1656,17 +1630,17 @@ namespace Domain
         private long _id;
 
         [Required]
-        [Column("primary_key", 4)]
-        public JObject PrimaryKey
+        [Column("command", 2)]
+        public string Command
         {
-            get => _primaryKey;
+            get => _command;
             set
             {
-                _primaryKey = value;
-                MarkDirty("PrimaryKey");
+                _command = value;
+                MarkDirty("Command");
             }
         }
-        private JObject _primaryKey;
+        private string _command;
 
         [Required]
         [Column("table_name", 3)]
@@ -1682,6 +1656,19 @@ namespace Domain
         private string _tableName;
 
         [Required]
+        [Column("primary_key", 4)]
+        public JObject PrimaryKey
+        {
+            get => _primaryKey;
+            set
+            {
+                _primaryKey = value;
+                MarkDirty("PrimaryKey");
+            }
+        }
+        private JObject _primaryKey;
+
+        [Required]
         [Column("user_id", 5)]
         public Guid UserId
         {
@@ -1693,19 +1680,24 @@ namespace Domain
             }
         }
         private Guid _userId;
+
+        [Required]
+        [Column("executed", 6)]
+        public long Executed
+        {
+            get => _executed;
+            set
+            {
+                _executed = value;
+                MarkDirty("Executed");
+            }
+        }
+        private long _executed;
     }
 
     [View("whizz.unique_indexes")]
     public partial class WhizzUniqueIndexes : BaseEntity
     {
-        [Readonly]
-        [Column("column_names", 4)]
-        public string[] ColumnNames { get; set; }
-
-        [Readonly]
-        [Column("index_name", 3)]
-        public string IndexName { get; set; }
-
         [Readonly]
         [Column("schema_name", 1)]
         public string SchemaName { get; set; }
@@ -1713,6 +1705,14 @@ namespace Domain
         [Readonly]
         [Column("table_name", 2)]
         public string TableName { get; set; }
+
+        [Readonly]
+        [Column("index_name", 3)]
+        public string IndexName { get; set; }
+
+        [Readonly]
+        [Column("column_names", 4)]
+        public string[] ColumnNames { get; set; }
     }
 
 }

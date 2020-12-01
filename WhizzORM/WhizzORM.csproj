@@ -6,14 +6,16 @@
 
   <ItemGroup>
     <PackageReference Include="Ardalis.Specification" Version="4.1.0" />
-    <PackageReference Include="Dapper" Version="2.0.35" />
     <PackageReference Include="MediatR" Version="9.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Routing" Version="2.2.2" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Npgsql" Version="4.1.5" />
     <PackageReference Include="Npgsql.Json.NET" Version="4.1.5" />
     <PackageReference Include="Npgsql.NodaTime" Version="4.1.5" />
     <PackageReference Include="System.Collections.Immutable" Version="1.7.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WhizzBase\WhizzBase.csproj" />
+    <ProjectReference Include="..\WhizzSchema\WhizzSchema.csproj" />
   </ItemGroup>
 
 </Project>

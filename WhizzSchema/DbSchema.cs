@@ -62,6 +62,25 @@ namespace WhizzSchema
             return schemaName == DefaultSchema ? Quote(relationName) : $"{Quote(schemaName)}.{Quote(relationName)}";
         }
 
+        public RelationEntity UnquoteRelationName(string name, Type type)
+        {
+            if (name == null) throw new DbException(@$"Unable to resolve table or view from class '{type}'.\r\n Table or view attribute must be applied to the class");
+
+            var names = name.Split(".");
+            var relationName = Unquote(names[0]);
+            var schemaName = DbSchema.DefaultSchema;
+
+            if (names.Length > 1)
+                schemaName = Unquote(names[1]);
+
+            return GetRelation(relationName, schemaName);
+        }
+
+        public string Unquote(string value)
+        {
+            return value.Replace("\"", "");
+        }
+        
         public string Quote(string value)
         {
             if (Regex.IsMatch(value, "[^a-z0-9_]") || Keywords.Contains(value))
@@ -99,7 +118,7 @@ namespace WhizzSchema
             if (!RelationExists(relationName, schemaName))
                 throw new DbException($"Relation does not exist: '{relationName}'.'{schemaName}'");
             
-            return ColumnEntities.Where(q => q.RelationName == relationName && q.SchemaName == schemaName).ToImmutableArray();
+            return ColumnEntities.Where(q => q.RelationName == relationName && q.SchemaName == schemaName).OrderBy(o => o.Position).ToImmutableArray();
         }
 
         public ImmutableArray<ForeignKeyEntity> GetForeignKeys(string tableName, string schemaName = DefaultSchema)

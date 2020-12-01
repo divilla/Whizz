@@ -19,6 +19,8 @@ namespace WhizzSchema.Interfaces
         bool SchemaExists(string schemaName);
         bool RelationExists(string relationName, string schemaName);
         string QuotedRelationName(string relationName, string schemaName);
+        RelationEntity UnquoteRelationName(string name, Type type);
+        string Unquote(string value);
         string Quote(string value);
         string EscapedQuotedRelationName(string relationName, string schemaName);
         string EscapedQuote(string value);

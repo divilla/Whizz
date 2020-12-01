@@ -1,16 +1,20 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
-using WhizzSchema;
-using WhizzSchema.Interfaces;
+﻿using System.Reflection;
+using Autofac;
+using MediatR;
 
 namespace WhizzORM
 {
     public static class WhizzOrmStartup
     {
-        public static void AddWhizzOrm(this IServiceCollection services, string connectionString)
-        {
-            services.AddScoped(config => new NpgsqlConnection(connectionString));
-            services.AddSingleton<IDbSchema>(new DbSchema(connectionString));
+        public static void AddWhizzOrm(this ContainerBuilder builder, params Assembly[] assemblies) {
+            var openHandlersTypes = new[] { typeof(IRequestHandler<,>), typeof(INotificationHandler<>) };
+            foreach (var openHandlerType in openHandlersTypes)
+            {
+                builder
+                    .RegisterAssemblyTypes(assemblies)
+                    .AsClosedTypesOf(openHandlerType)
+                    .InstancePerDependency();
+            }        
         }
     }
 }

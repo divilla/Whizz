@@ -1,17 +1,25 @@
 ﻿using System;
+using MediatR;
+using WhizzORM.Context;
+using WhizzORM.Interfaces;
 
 namespace WhizzORM.Base
 {
-    public class BaseRequest<TContext, TEntity>
-        where TEntity : class, new()
+    public class BaseRequest<TResponse> : IRequest<TResponse>
+        where TResponse : class, new()
     {
-        public BaseRequest(ref TContext context)
-        {
-            Context = context;
-            EntityType = typeof(TEntity);
-        }
+        // public BaseRequest(ref DbContext context, ref IMediator mediator)
+        // {
+        //     Context = context;
+        //     
+        // }
 
-        public TContext Context { get; }
-        public Type EntityType { get; }
+        public IDbContext Context { get; set; }
+        public IMediator Mediator { get; set; }
+
+        public void Send()
+        {
+            Mediator.Send(this);
+        }
     }
 }

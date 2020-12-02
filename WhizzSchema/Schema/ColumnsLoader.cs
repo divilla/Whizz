@@ -92,7 +92,7 @@ namespace WhizzSchema.Schema
                     LEFT JOIN pg_constraint ct ON ct.conrelid = c.oid AND ct.contype = 'p'
                 WHERE
                     a.attnum > 0 AND t.typname != '' AND NOT a.attisdropped
-                    AND c.relkind IN ('r', 'p', 'v', 'm')
+                    AND c.relkind IN ('r', 'p', 'f', 'v', 'm')
                     AND d.nspname NOT LIKE 'pg_%' AND d.nspname != 'information_schema'
                     AND (pg_has_role(c.relowner, 'USAGE'::text) OR has_table_privilege(quote_ident(d.nspname)||'.'||quote_ident(c.relname), 'SELECT'::text))
                 ORDER BY

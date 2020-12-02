@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using WhizzBase.Attributes;
 
 namespace WhizzBase.Helpers
@@ -12,7 +13,14 @@ namespace WhizzBase.Helpers
             return (TAttribute) attribute;
         }
 
-        public static string GetRelationSchemaName(Type type)
+        public static TAttribute GetAttribute<TAttribute>(PropertyInfo property)
+            where TAttribute : Attribute
+        {
+            var attribute = property.GetCustomAttribute(typeof(TAttribute));
+            return (TAttribute) attribute;
+        }
+
+        public static string GetRelationDbName(Type type)
         {
             var tableAttribute = GetAttribute<TableAttribute>(type);
             if (tableAttribute != null) return tableAttribute.Name;

@@ -10,10 +10,12 @@ namespace WhizzApplication
         public static IContainer Configure()
         {
             var builder = new ContainerBuilder();
-            builder.AddWhizzOrm(Assembly.GetAssembly(typeof(WhizzOrmStartup)), Assembly.GetExecutingAssembly());
-            var connection = new NpgsqlConnection("Host=localhost;Database=quitepos_demo;Username=quitepos;Password=Masa{}/3");
-            builder.Register(s => connection);
-            builder.Register(s => new ApplicationDbContext(connection));
+            builder.AddWhizzOrm<ApplicationDbContext>(c =>
+            {
+                c.Connection = new NpgsqlConnection("Host=localhost;Database=quitepos_demo;Username=quitepos;Password=Masa{}/3");
+                c.Context = new ApplicationDbContext(c.Connection);
+                c.Assemblies.Add(Assembly.GetExecutingAssembly());
+            });
 
             return builder.Build();
         }

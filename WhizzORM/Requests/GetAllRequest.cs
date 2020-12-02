@@ -2,10 +2,8 @@
 
 namespace WhizzORM.Requests
 {
-    public class GetAllRequest<TContext, TEntity> : BaseRequest<TContext, TEntity>
-        where TEntity : class, new()
+    public class GetAllRequest<TResponse> : BaseRequest<TResponse>
+        where TResponse : class, new()
     {
-        public GetAllRequest(ref TContext context) : base(ref context) 
-        { }
     }
 }

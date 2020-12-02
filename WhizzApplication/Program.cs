@@ -9,11 +9,10 @@ namespace WhizzApplication
 {
     public static class Program
     {
+        public static IContainer Container { get; private set; }
         public static void Main(string[] args)
         {
-            var container = ContainerConfig.Configure();
-            using var scope = container.BeginLifetimeScope();
-            var dbContext = scope.Resolve<ApplicationDbContext>();
+            Container = ContainerConfig.Configure();
         }
     }
 }

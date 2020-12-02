@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using WhizzBase.Helpers;
 using WhizzORM.Interfaces;
 using WhizzORM.Requests;
-using WhizzSchema;
-using WhizzSchema.Entities;
-using WhizzSchema.Interfaces;
 
 namespace WhizzORM.Context
 {
@@ -23,9 +17,9 @@ namespace WhizzORM.Context
         private Type _responseType;
         private IDbContext _dbContext;
         
-        public GetAllRequest<List<TEntity>> GetAll()
+        public GetAllRequest<TEntity> GetAll()
         {
-            return new GetAllRequest<List<TEntity>>();
+            return new GetAllRequest<TEntity>(_dbContext.EntitySchema[typeof(TEntity)]);
         }
     }
 }

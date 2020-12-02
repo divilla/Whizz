@@ -1,9 +1,4 @@
-﻿using System.Net.Mime;
-using Autofac;
-using Npgsql;
-using Utf8Json;
-using WhizzBase.Base;
-using WhizzORM.Context;
+﻿using Autofac;
 
 namespace WhizzApplication
 {

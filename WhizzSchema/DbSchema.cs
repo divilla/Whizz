@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -62,16 +61,17 @@ namespace WhizzSchema
             return schemaName == DefaultSchema ? Quote(relationName) : $"{Quote(schemaName)}.{Quote(relationName)}";
         }
 
-        public RelationEntity UnquoteRelationName(string name, Type type)
+        public RelationEntity UnquoteRelationName(string name)
         {
-            if (name == null) throw new DbException(@$"Unable to resolve table or view from class '{type}'.\r\n Table or view attribute must be applied to the class");
+            if (string.IsNullOrEmpty(name)) 
+                throw new DbArgumentException("Relation name should not be null or empty", nameof(name));
 
             var names = name.Split(".");
             var relationName = Unquote(names[0]);
-            var schemaName = DbSchema.DefaultSchema;
-
-            if (names.Length > 1)
-                schemaName = Unquote(names[1]);
+            var schemaName = (names.Length > 1) ? Unquote(names[1]) : DefaultSchema;
+            
+            if (!RelationExists(relationName, schemaName))
+                throw new DbArgumentException($"Relation '{name}' does not exist in database");
 
             return GetRelation(relationName, schemaName);
         }
@@ -148,6 +148,20 @@ namespace WhizzSchema
             var type = typeEntity?.Type == null ? typeof(string) : typeEntity.Type;
 
             return type.ToKeywordName(column.Dimension);
+        }
+
+        public ImmutableArray<string> GetColumnNames(string relationName, string schemaName = IDbSchema.DefaultSchema)
+        {
+            return GetColumns(relationName, schemaName)
+                .Select(s => s.ColumnName)
+                .ToImmutableArray();
+        }
+
+        public ImmutableDictionary<string, Type> GetColumnTypes(string relationName, string schemaName = IDbSchema.DefaultSchema)
+        {
+            return  GetColumns(relationName, schemaName)
+                .ToDictionary(k => k.ColumnName, v => GetType(v)?.Type ?? typeof(string))
+                .ToImmutableDictionary();
         }
 
         private async Task _init(string connectionString)

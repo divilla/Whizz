@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using WhizzBase.Reflection;
 
 namespace WhizzBase.Helpers
 {
@@ -11,8 +12,8 @@ namespace WhizzBase.Helpers
             PropertyInfo = propertyInfo;
             Name = propertyInfo.Name;
             Type = propertyInfo.PropertyType;
-            _getMethod = PropertyDelegateMaker.GetDelegate(propertyInfo);
-            _setMethod = PropertyDelegateMaker.SetDelegate(propertyInfo);
+            _getMethod = DelegateGenerator.GetDelegate(propertyInfo);
+            _setMethod = DelegateGenerator.SetDelegate(propertyInfo);
         }
 
         public string ColumnName { get; } 

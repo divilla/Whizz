@@ -11,10 +11,9 @@ namespace WhizzORM
 {
     public static class WhizzOrmStartup
     {
-        public static void AddWhizzOrm<TDbContext>(this ContainerBuilder builder, Action<WhizzOrmStartupConfiguration<TDbContext>> configuration) 
-            where TDbContext : DbContext<TDbContext>
+        public static void AddWhizzOrm(this ContainerBuilder builder, Action<WhizzOrmStartupConfiguration> configuration)
         {
-            var config = new WhizzOrmStartupConfiguration<TDbContext>();
+            var config = new WhizzOrmStartupConfiguration();
             configuration(config);
 
             var thisAssembly = Assembly.GetAssembly(typeof(WhizzOrmStartup));
@@ -23,11 +22,9 @@ namespace WhizzORM
 
             builder.Register(c => config.Connection);
 
-            builder.Register(c =>
-            {
-                var connection = c.Resolve<NpgsqlConnection>();
-                return (TDbContext) Activator.CreateInstance(typeof(TDbContext), connection);
-            }).AsSelf().As<IDbContext>();
+            builder.Register(c => config.Repository).AsSelf().As<IRepository>();
+
+            builder.Register(c => config.JsonRepository).AsSelf();
             
             builder
                 .RegisterType<Mediator>()

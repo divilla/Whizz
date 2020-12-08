@@ -70,7 +70,7 @@ namespace WhizzBuilder
 
                                     if (column.IsRequired && relation.Kind != "v" && relation.Kind != "m")
                                         p.AddRequiredAttribute();
-                                    else if (column.IsReadOnly || relation.Kind == "v" || relation.Kind == "m")
+                                    else if (column.IsReadonly || relation.Kind == "v" || relation.Kind == "m")
                                         p.AddReadonlyAttribute();
 
                                     if (column.CharacterMaximumLength != null && relation.Kind != "v" && relation.Kind != "m")

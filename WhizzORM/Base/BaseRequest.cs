@@ -1,8 +1,4 @@
-﻿using System;
-using MediatR;
-using WhizzORM.Context;
-using WhizzORM.Handlers;
-using WhizzORM.Interfaces;
+﻿using WhizzORM.Context;
 
 namespace WhizzORM.Base
 {

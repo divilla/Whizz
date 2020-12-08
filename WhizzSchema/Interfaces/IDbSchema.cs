@@ -6,6 +6,7 @@ namespace WhizzSchema.Interfaces
 {
     public interface IDbSchema
     {
+        const string DefaultSchema = "public";
         string DatabaseName { get; }
         ImmutableArray<SchemaEntity> SchemaEntities { get; }
         ImmutableArray<RelationEntity> RelationEntities { get; }
@@ -19,16 +20,18 @@ namespace WhizzSchema.Interfaces
         bool SchemaExists(string schemaName);
         bool RelationExists(string relationName, string schemaName);
         string QuotedRelationName(string relationName, string schemaName);
-        RelationEntity UnquoteRelationName(string name, Type type);
+        RelationEntity UnquoteRelationName(string name);
         string Unquote(string value);
         string Quote(string value);
         string EscapedQuotedRelationName(string relationName, string schemaName);
         string EscapedQuote(string value);
-        RelationEntity GetRelation(string relationName, string schemaName = DbSchema.DefaultSchema);
-        ImmutableArray<ColumnEntity> GetColumns(string relationName, string schemaName = DbSchema.DefaultSchema);
-        ImmutableArray<ForeignKeyEntity> GetForeignKeys(string tableName, string schemaName = DbSchema.DefaultSchema);
-        ImmutableArray<UniqueIndexEntity> GetUniqueIndexes(string tableName, string schemaName = DbSchema.DefaultSchema);
+        RelationEntity GetRelation(string relationName, string schemaName = DefaultSchema);
+        ImmutableArray<ColumnEntity> GetColumns(string relationName, string schemaName = DefaultSchema);
+        ImmutableArray<ForeignKeyEntity> GetForeignKeys(string tableName, string schemaName = DefaultSchema);
+        ImmutableArray<UniqueIndexEntity> GetUniqueIndexes(string tableName, string schemaName = DefaultSchema);
         TypeEntity GetType(ColumnEntity column);
         string GetTypeName(ColumnEntity column);
+        ImmutableArray<string> GetColumnNames(string relationName, string schemaName = DefaultSchema);
+        ImmutableDictionary<string, Type> GetColumnTypes(string relationName, string schemaName = DefaultSchema);
     }
 }

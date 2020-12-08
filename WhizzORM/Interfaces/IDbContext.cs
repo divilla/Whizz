@@ -8,7 +8,7 @@ namespace WhizzORM.Interfaces
 {
     public interface IDbContext
     {
-        NpgsqlConnection Connection { get; }
+        public NpgsqlConnection Connection { get; }
         IDbSchema DbSchema { get; }
         ImmutableDictionary<Type, EntitySchema> EntitySchema { get; }
     }

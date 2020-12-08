@@ -2,6 +2,7 @@
 using Autofac;
 using Npgsql;
 using WhizzORM;
+using WhizzORM.Context;
 
 namespace WhizzApplication
 {
@@ -10,10 +11,12 @@ namespace WhizzApplication
         public static IContainer Configure()
         {
             var builder = new ContainerBuilder();
-            builder.AddWhizzOrm<ApplicationDbContext>(c =>
+            var connection = new NpgsqlConnection("Host=localhost;Database=quitepos_demo;Username=quitepos;Password=Masa{}/3");
+            builder.AddWhizzOrm(c =>
             {
-                c.Connection = new NpgsqlConnection("Host=localhost;Database=quitepos_demo;Username=quitepos;Password=Masa{}/3");
-                c.Context = new ApplicationDbContext(c.Connection);
+                c.Connection = connection;
+                c.Repository = new ApplicationRepository(connection);
+                c.JsonRepository = new JsonRepository(connection);
                 c.Assemblies.Add(Assembly.GetExecutingAssembly());
             });
 

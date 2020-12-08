@@ -4,7 +4,7 @@ namespace WhizzSchema.Entities
 {
     public class ColumnEntity
     {
-        public ColumnEntity(string schemaName, string relationName, string columnName, short position, uint typeOid, string dataType, string typeType, int size, int modifier, int dimension, int? characterMaximumLength, int? numericPrecision, int? numericScale, string[] enumValues, string defaultValue, bool isNotNull, bool isGenerated, bool isPrimaryKey, bool isRequired, bool isReadOnly, string columnComment)
+        public ColumnEntity(string schemaName, string relationName, string columnName, short position, uint typeOid, string dataType, string typeType, int size, int modifier, int dimension, int? characterMaximumLength, int? numericPrecision, int? numericScale, string[] enumValues, string defaultValue, bool isNotNull, bool isGenerated, bool isPrimaryKey, bool isRequired, bool isReadonly, string columnComment)
         {
             SchemaName = schemaName;
             RelationName = relationName;
@@ -25,7 +25,7 @@ namespace WhizzSchema.Entities
             IsGenerated = isGenerated;
             IsPrimaryKey = isPrimaryKey;
             IsRequired = isRequired;
-            IsReadOnly = isReadOnly;
+            IsReadonly = isReadonly;
             ColumnComment = columnComment;
         }
 
@@ -46,9 +46,14 @@ namespace WhizzSchema.Entities
         public string DefaultValue { get; }
         public bool IsNotNull { get; }
         public bool IsGenerated { get; }
-        public bool IsPrimaryKey { get; }
+        public bool IsPrimaryKey { get; private set; }
         public bool IsRequired { get; }
-        public bool IsReadOnly { get; }
+        public bool IsReadonly { get; }
         public string ColumnComment { get; }
+
+        public void SetPrimaryKey()
+        {
+            IsPrimaryKey = true;
+        }
     }
 }

@@ -1,6 +1,8 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
 
 namespace WhizzBase.Extensions
 {
@@ -64,6 +66,38 @@ namespace WhizzBase.Extensions
             }
 
             return value;
+        }
+
+        public static bool TryParseJson(this string json, out JContainer container)
+        {
+            container = null;
+            if (json[0] == '{')
+            {
+                try
+                {
+                    container = JObject.Parse(json);
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    return false;
+                }
+            }
+            
+            if (json[0] == '[')
+            {
+                try
+                {
+                    container = JArray.Parse(json);
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    return false;
+                }
+            }
+            
+            return false;
         }
     }
 }

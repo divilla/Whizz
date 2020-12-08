@@ -1,4 +1,4 @@
-﻿namespace WhizzORM.Validation
+﻿namespace WhizzORM.Validators
 {
     public class RelationValidator
     {

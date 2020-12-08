@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using WhizzBase.Helpers;
 
@@ -82,6 +83,20 @@ namespace WhizzBase.Extensions
 
             // Report whether TypeToTest is a form of the Nullable<> type
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+        }
+
+        public static PropertyInfo MatchProperty(this Type type, string name)
+        {
+            var propertyInfo = type.GetProperty(name.ToPascalCase());
+            if (propertyInfo != null) return propertyInfo;
+
+            propertyInfo = type.GetProperty(name.ToCamelCase());
+            if (propertyInfo != null) return propertyInfo;
+            
+            propertyInfo = type.GetProperty(name.ToSnakeCase());
+            if (propertyInfo != null) return propertyInfo;
+
+            return null;
         }
     }
 }

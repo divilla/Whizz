@@ -9,10 +9,8 @@ namespace WhizzSchema.Schema
     {
         public static IEnumerable<ColumnEntity> Load(NpgsqlConnection connection)
         {
-            var generated = "";
-            if (connection.PostgreSqlVersion.Major >= 12)
-                generated = "OR attidentity != '' OR attgenerated != ''";
-                
+            var isIdentity = connection.PostgreSqlVersion.Major >= 10 ? "attidentity != ''" : "false";
+            var isGenerated = connection.PostgreSqlVersion.Major >= 10 ? "attgenerated != ''" : "false";
             var sql = @$"
                 SELECT json_agg(t)
                 FROM (SELECT
@@ -21,7 +19,7 @@ namespace WhizzSchema.Schema
                     a.attname::text                                                                                             AS ""columnName"",
                     a.attnum                                                                                                    AS ""position"",
                     COALESCE(td.oid, tb.oid, t.oid)::bigint                                                                     AS ""typeOid"",
-                    COALESCE(td.typname, tb.typname, t.typname)::text                                                           AS ""dataType"",
+                    format_type(atttypid, NULL::integer)                                                                        AS ""dataType"",
                     COALESCE(td.typtype, tb.typtype, t.typtype)::text                                                           AS ""typeType"",
                     a.attlen::int                                                                                               AS ""size"",
                     a.atttypmod::int                                                                                            AS ""modifier"",
@@ -56,30 +54,35 @@ namespace WhizzSchema.Schema
                         THEN (SELECT array_agg(enumlabel) FROM pg_enum WHERE enumtypid = COALESCE(td.oid, tb.oid, a.atttypid))
                         ELSE NULL
                     END                                                                                                         AS ""enumValues"",
-                    CAST(pg_get_expr(ad.adbin, ad.adrelid) AS text)                                                             AS ""columnDefault"",
+                    CASE
+                        WHEN a.attgenerated = '' THEN pg_get_expr(ad.adbin, ad.adrelid)
+                        ELSE NULL::text
+                        END::information_schema.character_data                                                                  AS ""defaultValue"",
                     a.attnotnull                                                                                                AS ""isNotNull"",
-                    coalesce(pg_get_expr(ad.adbin, ad.adrelid) ~ 'nextval',false)
-                        {generated}
-                        OR (t.typname = 'uuid' AND CAST(pg_get_expr(ad.adbin, ad.adrelid) AS text) IS NOT NULL)                 AS ""isGenerated"",
+                    CASE
+                        WHEN coalesce(pg_get_expr(ad.adbin, ad.adrelid) ~ 'nextval', false)
+                            OR {isIdentity} OR {isGenerated}
+                            OR (t.typname = 'uuid' AND LENGTH(COALESCE(pg_get_expr(ad.adbin, ad.adrelid), '')) > 0) THEN true
+                        ELSE false
+                        END::bool                                                                                               AS ""isGenerated"",
                     CASE
                         WHEN a.attnum = any (ct.conkey) THEN true
                         ELSE false
                         END::bool                                                                                               AS ""isPrimaryKey"",
                     CASE
-                        WHEN CAST(pg_get_expr(ad.adbin, ad.adrelid) AS text) IS NOT NULL
-                            OR coalesce(pg_get_expr(ad.adbin, ad.adrelid) ~ 'nextval', false)
-                            {generated} THEN false
+                        WHEN length(coalesce(pg_get_expr(ad.adbin, ad.adrelid), '')) > 0
+                            OR {isIdentity} OR {isGenerated}
+                            OR a.attnotnull = false THEN false
                         ELSE true
                         END::bool                                                                                               AS ""isRequired"",
                     CASE
-                        WHEN coalesce(pg_get_expr(ad.adbin, ad.adrelid) ~ 'nextval',false)
-                            {generated}
-                            OR (t.typname = 'uuid' AND CAST(pg_get_expr(ad.adbin, ad.adrelid) AS text) IS NOT NULL) THEN true
+                        WHEN coalesce(pg_get_expr(ad.adbin, ad.adrelid) ~ 'nextval', false)
+                            OR {isIdentity} OR {isGenerated}
+                            OR (t.typname = 'uuid' AND length(coalesce(pg_get_expr(ad.adbin, ad.adrelid), '')) > 0) THEN true
                         WHEN (c.relkind = ANY (ARRAY ['r', 'p'])) 
-                            OR (c.relkind = ANY (ARRAY ['v', 'f'])) 
-                            AND pg_column_is_updatable(c.oid::regclass, a.attnum, false) THEN false
-                            ELSE true
-                            END::bool                                                                                           AS ""isReadonly"",
+                            OR (c.relkind = ANY (ARRAY ['v', 'f'])) AND pg_column_is_updatable(c.oid::regclass, a.attnum, false) THEN false
+                        ELSE true
+                        END::bool                                                                                               AS ""isReadonly"",
                     pg_catalog.col_description(c.oid, a.attnum)                                                                 AS ""columnComment""
                 FROM
                     pg_class c
@@ -96,9 +99,9 @@ namespace WhizzSchema.Schema
                     AND d.nspname NOT LIKE 'pg_%' AND d.nspname != 'information_schema'
                     AND (pg_has_role(c.relowner, 'USAGE'::text) OR has_table_privilege(quote_ident(d.nspname)||'.'||quote_ident(c.relname), 'SELECT'::text))
                 ORDER BY
-                    d.nspname::text,
-                    c.relname::text,
-                    a.attname::text) t;";
+                    d.nspname,
+                    c.relname,
+                    a.attnum) t;";
             
             var command = new NpgsqlCommand(sql, connection);
             var json = command.ExecuteScalar().ToString();

@@ -7,7 +7,7 @@ using WhizzBase.Base;
 
 namespace WhizzORM.Validation
 {
-    public class WhizzAbstractValidator<T> : AbstractValidator<T>
+    public class AbstractValidator<T> : FluentValidation.AbstractValidator<T>
     {
         public IRuleBuilderInitial<T, TProperty> RuleFor<TProperty>(string propertyName)
         {
@@ -22,7 +22,9 @@ namespace WhizzORM.Validation
             var genericFuncType = typeof(Func<,>).MakeGenericType(type, propertyType);
             var lambdaMethodInfo = typeof(Expression).GetMethods().First(a => a.Name == "Lambda" && a.GetParameters().Length == 2);
             var genericMethodInfo = lambdaMethodInfo.MakeGenericMethod(genericFuncType);
-            var expression = genericMethodInfo.Invoke(null, new object[] { Expression.PropertyOrField(parameterExpression, propertyName), new[] { parameterExpression }}) as Expression<Func<T, TProperty>>;
+            var expression = genericMethodInfo.Invoke(null, 
+                new object[] { Expression.PropertyOrField(parameterExpression, propertyName), new[] { parameterExpression }}) 
+                as Expression<Func<T, TProperty>>;
 
             return RuleFor(expression);
         }

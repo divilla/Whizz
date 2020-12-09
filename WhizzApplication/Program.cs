@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using Autofac;
 using Newtonsoft.Json.Linq;
-using Npgsql;
-using NpgsqlTypes;
-using WhizzORM.Context;
-using WhizzORM.Interfaces;
-using WhizzORM.JsonValidate;
+using WhizzJsonRepository.Interfaces;
 using IContainer = Autofac.IContainer;
 
 namespace WhizzApplication
@@ -21,7 +16,6 @@ namespace WhizzApplication
             Container = ContainerConfig.Configure();
 
             var repository = Container.Resolve<IRepository>();
-            var jsonRepository = Container.Resolve<JsonRepository>();
             var dto = new TestInsertDto
             {
                 Name = "SomeNa",
@@ -32,12 +26,13 @@ namespace WhizzApplication
             };
 
             var dictionary = new Dictionary<string, string> {["id"] = "87fe400c-34f2-11eb-8a58-f72b7c428401"};
-            var jObject = new JObject {["id"] = "87fe400c-34f2-11eb-8a58-f72b7c428401", ["date"] = "2011-11-11T18:25:43.51Z"};
-            var invoker = new JsonQueryCommandInvoker(jsonRepository);
-            var state = invoker.ValidatePrimaryKey(jObject, "test");
+            // var jObject = new JObject {["id"] = "87fe400c-34f2-11eb-8a58-f72b7c428401", ["date"] = "2011-11-11T18:25:43.51Z"};
+            var jObject = new JObject {["id"] = "87fe400c-34f2-11eb-8a58-f72b7c428401"};
+            var state = await repository.Find("test").OneAsync(jObject);
+            // var state = invoker.ValidatePrimaryKey(jObject, "test");
             //Int64, Boolean, Double, String
 
-            Console.WriteLine(state.Success);
+            Console.WriteLine(state.Response["data"]);
         }
     }
 }

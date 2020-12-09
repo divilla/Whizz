@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ardalis.Specification" Version="4.1.0" />
+    <PackageReference Include="FluentValidation" Version="9.3.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="9.3.0" />
+    <PackageReference Include="MediatR" Version="9.0.0" />
+    <PackageReference Include="Npgsql" Version="4.1.6" />
+    <PackageReference Include="Npgsql.Json.NET" Version="4.1.6" />
+    <PackageReference Include="Npgsql.NodaTime" Version="4.1.6" />
+    <PackageReference Include="System.Collections.Immutable" Version="1.7.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WhizzBase\WhizzBase.csproj" />
+    <ProjectReference Include="..\WhizzSchema\WhizzSchema.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="JsonValidate" />
+  </ItemGroup>
+
+</Project>

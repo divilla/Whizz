@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using WhizzBase.Base;
+using WhizzBase.Enums;
 using WhizzBase.Extensions;
 
 namespace WhizzBase.Reflection

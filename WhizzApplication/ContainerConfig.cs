@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 using Autofac;
 using Npgsql;
-using WhizzORM;
-using WhizzORM.Context;
+using WhizzJsonRepository;
+using WhizzJsonRepository.Repository;
 
 namespace WhizzApplication
 {
@@ -12,11 +12,10 @@ namespace WhizzApplication
         {
             var builder = new ContainerBuilder();
             var connection = new NpgsqlConnection("Host=localhost;Database=quitepos_demo;Username=quitepos;Password=Masa{}/3");
-            builder.AddWhizzOrm(c =>
+            builder.AddWhizzJsonRepository(c =>
             {
                 c.Connection = connection;
-                c.Repository = new ApplicationRepository(connection);
-                c.JsonRepository = new JsonRepository(connection);
+                c.Repository = new JsonRepository(connection);
                 c.Assemblies.Add(Assembly.GetExecutingAssembly());
             });
 

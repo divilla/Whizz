@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Npgsql;
 using WhizzBase.Base;
+using WhizzBase.Enums;
 using WhizzBase.Helpers;
 using WhizzBase.Reflection;
 

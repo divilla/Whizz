@@ -1,4 +1,4 @@
-﻿namespace WhizzBase.Base
+﻿namespace WhizzBase.Enums
 {
     public enum Case
     {

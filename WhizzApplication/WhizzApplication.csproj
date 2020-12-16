@@ -12,4 +12,8 @@
         <ProjectReference Include="..\WhizzORM\WhizzORM.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Repositories" />
+    </ItemGroup>
+
 </Project>

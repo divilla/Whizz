@@ -157,6 +157,14 @@ namespace WhizzSchema
                 .ToImmutableArray();
         }
 
+        public ImmutableArray<string> GetPrimaryKeyColumnNames(string relationName, string schemaName = IDbSchema.DefaultSchema)
+        {
+            return GetColumns(relationName, schemaName)
+                .Where(q => q.IsPrimaryKey)
+                .Select(s => s.ColumnName)
+                .ToImmutableArray();
+        }
+
         public ImmutableDictionary<string, Type> GetColumnTypes(string relationName, string schemaName = IDbSchema.DefaultSchema)
         {
             return  GetColumns(relationName, schemaName)

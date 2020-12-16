@@ -5,17 +5,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using WhizzBase.Enums;
 using WhizzJsonRepository.Handlers;
+using WhizzJsonRepository.Interfaces;
 using WhizzJsonRepository.Repository;
 using WhizzSchema.Entities;
 using WhizzSchema.Interfaces;
 
 namespace WhizzJsonRepository.Base
 {
-    public abstract class BaseJsonHandler
+    public abstract class QueryJsonHandler
     {
         protected JsonResponseState State => _state;
         private JsonResponseState _state;
-        protected JsonRepository Repository { get; private set; }
+        protected JsonRepository<> Repository { get; private set; }
         protected Func<string, string> DbQuote => Repository.Schema.Quote;
         protected Func<string, string> ToDbCase => Repository.ToDbCase;
         protected Func<string, string> ToJsonCase => Repository.ToJsonCase;
@@ -27,43 +28,43 @@ namespace WhizzJsonRepository.Base
         protected IEnumerable<string> ColumnNames => Columns.Select(s => s.ColumnName);
         protected MandatoryColumns MandatoryColumns { get; private set; }
 
-        public static BaseJsonHandler Init(ref JsonResponseState state, JsonRepository repository, ImmutableArray<ColumnEntity> columns, MandatoryColumns mandatoryColumns = MandatoryColumns.None, string relationName = null, string schemaName = IDbSchema.DefaultSchema)
+        public static QueryJsonHandler Init(ref JsonResponseState state, IRepository repository, ImmutableArray<ColumnEntity> columns, MandatoryColumns mandatoryColumns = MandatoryColumns.None)
         {
             return new PrepareJsonRequestHandler()
                 .SetRequest(ref state, repository, columns, mandatoryColumns, relationName, schemaName)
                 .Handle();
         }
         
-        public BaseJsonHandler Next<T>()
-            where T : BaseJsonHandler, new()
+        public QueryJsonHandler Next<T>()
+            where T : QueryJsonHandler, new()
         {
             if (!State.Continue) 
-                return (T) this;
+                return this;
             
             return new T()
                 .SetRequest(ref _state, Repository, Columns, MandatoryColumns, RelationName, SchemaName)
                 .Handle();
         }
         
-        public async Task<BaseJsonHandler> NextAsync<T>()
-            where T : BaseJsonHandler, new()
+        public async Task<QueryJsonHandler> NextAsync<T>()
+            where T : QueryJsonHandler, new()
         {
             if (!State.Continue) 
-                return (T) this;
+                return this;
             
             return await new T()
                 .SetRequest(ref _state, Repository, Columns, MandatoryColumns, RelationName, SchemaName)
                 .HandleAsync();
         }
 
-        protected virtual BaseJsonHandler Handle()
+        protected virtual QueryJsonHandler Handle()
         {
             return this;
         }
 
-        protected virtual Task<BaseJsonHandler> HandleAsync()
+        protected virtual Task<QueryJsonHandler> HandleAsync()
         {
-            return Task<BaseJsonHandler>.Factory.StartNew(() => this);
+            return Task<QueryJsonHandler>.Factory.StartNew(() => this);
         }
 
         protected string AllColumnNamesSelect(string prefix = "")
@@ -81,7 +82,7 @@ namespace WhizzJsonRepository.Base
             return string.Join(", ", list);
         }
         
-        private BaseJsonHandler SetRequest(ref JsonResponseState state, JsonRepository repository, ImmutableArray<ColumnEntity> columns, MandatoryColumns mandatoryColumns, string relationName, string schemaName)
+        private QueryJsonHandler SetRequest(ref JsonResponseState state, JsonRepository<> repository, ImmutableArray<ColumnEntity> columns, MandatoryColumns mandatoryColumns, string relationName, string schemaName)
         {
             _state = state;
             Repository = repository;

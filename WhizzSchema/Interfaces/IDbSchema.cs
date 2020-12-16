@@ -32,6 +32,7 @@ namespace WhizzSchema.Interfaces
         TypeEntity GetType(ColumnEntity column);
         string GetTypeName(ColumnEntity column);
         ImmutableArray<string> GetColumnNames(string relationName, string schemaName = DefaultSchema);
+        ImmutableArray<string> GetPrimaryKeyColumnNames(string relationName, string schemaName = DefaultSchema);
         ImmutableDictionary<string, Type> GetColumnTypes(string relationName, string schemaName = DefaultSchema);
     }
 }

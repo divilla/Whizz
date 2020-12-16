@@ -8,7 +8,7 @@ using WhizzJsonRepository.Base;
 
 namespace WhizzJsonRepository.Handlers
 {
-    public class FindOneJsonRequestHandler : QueryJsonHandler
+    public class InsertRequestHandler : QueryJsonHandler
     {
         protected override QueryJsonHandler Handle()
         {
@@ -54,11 +54,11 @@ namespace WhizzJsonRepository.Handlers
 
         private NpgsqlCommand InitCommand()
         {
-            var select = AllColumnNamesSelect("s");
-            var from = QuotedRelationName;
-            var where = string.Join(" AND ", State.Request.Properties()
-                .Select(s => $"s.{DbQuote(s.Name)} = p.{DbQuote(s.Name)}"));
-            var sql = $"SELECT row_to_json(t) FROM (SELECT {select} FROM {from} s, json_populate_record(null::{from}, @json) p WHERE {where}) t;";
+            var select = string.Join(", ", State.Request.Properties().Select(s => DbQuote(s.Name)));
+            var into = QuotedRelationName;
+            var returning = string.Join(", ", Repository.Schema.GetPrimaryKeyColumnNames(RelationName, SchemaName)
+                .Select(s => $"'{ToJsonCase(s)}', {DbQuote(s)}"));
+            var sql = $"INSERT INTO {into} ({select}) SELECT {select} FROM json_populate_record(null::{into}, @json) RETURNING json_build_object({returning});";
             var command = new NpgsqlCommand(sql, Repository.Connection);
             command.Parameters.Add("json", NpgsqlDbType.Json);
             command.Parameters[0].Value = State.Request.ToString(Formatting.None);

@@ -4,9 +4,9 @@ using WhizzJsonRepository.Base;
 
 namespace WhizzJsonRepository.Validators
 {
-    public class GenericMaxLengthJsonValidatorHandler : BaseJsonHandler
+    public class GenericMaxLengthJsonValidatorHandler : QueryJsonHandler
     {
-        protected override BaseJsonHandler Handle()
+        protected override QueryJsonHandler Handle()
         {
             foreach (var column in Columns.Where(q => q.CharacterMaximumLength != null && q.CharacterMaximumLength > 0))
             {
@@ -15,7 +15,7 @@ namespace WhizzJsonRepository.Validators
                 
                 if (State.Request[column.ColumnName] is JValue 
                     && ((JValue) State.Request[column.ColumnName]).Value<string>().Length > column.CharacterMaximumLength)
-                    State.AddError(column.ColumnName, Repository.ErrorMessages.TooLong(column.CharacterMaximumLength));
+                    State.AddError(column.ColumnName, Repository.PgValidationErrorMessages.TooLong(column.CharacterMaximumLength));
             }
 
             return this;

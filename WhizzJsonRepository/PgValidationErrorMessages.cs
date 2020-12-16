@@ -1,6 +1,7 @@
-﻿namespace WhizzJsonRepository.JsonValidate
+﻿// ReSharper disable ClassWithVirtualMembersNeverInherited.Global
+namespace WhizzJsonRepository
 {
-    public class ErrorMessages
+    public class PgValidationErrorMessages
     {
         public virtual string MissingProperty => "Required property is undefined";
         public virtual string Required => "Required";

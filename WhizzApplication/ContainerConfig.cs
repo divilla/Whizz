@@ -1,8 +1,4 @@
-﻿using System.Reflection;
-using Autofac;
-using Npgsql;
-using WhizzJsonRepository;
-using WhizzJsonRepository.Repository;
+﻿using Autofac;
 
 namespace WhizzApplication
 {
@@ -11,13 +7,10 @@ namespace WhizzApplication
         public static IContainer Configure()
         {
             var builder = new ContainerBuilder();
-            var connection = new NpgsqlConnection("Host=localhost;Database=quitepos_demo;Username=quitepos;Password=Masa{}/3");
-            builder.AddWhizzJsonRepository(c =>
-            {
-                c.Connection = connection;
-                c.Repository = new JsonRepository(connection);
-                c.Assemblies.Add(Assembly.GetExecutingAssembly());
-            });
+            builder.Register(c => 
+                new QuitePosDb("Host=localhost;Database=quitepos_demo;Username=quitepos;Password=Masa{}/3;Minimum Pool Size=1"));
+            builder.Register(c => 
+                new QuitePosConnection("Host=localhost;Database=quitepos_demo;Username=quitepos;Password=Masa{}/3;Minimum Pool Size=1"));
 
             return builder.Build();
         }

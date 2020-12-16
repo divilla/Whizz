@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using Npgsql;
-using Utf8Json;
-using Utf8Json.Resolvers;
-using WhizzBase.Base;
-using WhizzBase.Extensions;
 using WhizzBase.Reflection;
 using WhizzJsonRepository.Interfaces;
-using WhizzORM.Interfaces;
 
-namespace WhizzORM.Context
+namespace WhizzJsonRepository.Repository
 {
     public class BaseCommand<TDbCommand, TData>
     {

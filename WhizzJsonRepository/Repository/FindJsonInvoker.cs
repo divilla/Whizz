@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using WhizzBase.Enums;
 using WhizzJsonRepository.Base;
 using WhizzJsonRepository.Handlers;
+using WhizzJsonRepository.Interfaces;
 using WhizzJsonRepository.Validators;
 // ReSharper disable MethodHasAsyncOverload
 
@@ -12,22 +13,21 @@ namespace WhizzJsonRepository.Repository
 {
     public class FindJsonInvoker
     {
-        public FindJsonInvoker(JsonRepository repository, string relationName, string schemaName)
+        public FindJsonInvoker(IRepository repository)
         {
             _repository = repository;
-            _relationName = relationName;
-            _schemaName = schemaName;
         }
 
-        private JsonRepository _repository;
-        private string _relationName;
-        private string _schemaName;
+        private IRepository _repository;
 
         public JsonResponseState One(JObject primaryKey)
         {
             var response = new JsonResponseState(primaryKey);
-            var columns = _repository.Schema.GetColumns(_relationName, _schemaName).Where(q => q.IsPrimaryKey).ToImmutableArray();
-            BaseJsonHandler.Init(ref response, _repository, columns, MandatoryColumns.All, _relationName, _schemaName)
+            var columns = _repository.Db.Schema
+                .GetColumns(_repository.RelationName, _repository.SchemaName)
+                .Where(q => q.IsPrimaryKey).ToImmutableArray();
+            
+            QueryJsonHandler.Init(ref response, _repository, columns, MandatoryColumns.All)
                 .Next<GenericRequiredJsonValidatorHandler>()
                 .Next<GenericTypeJsonValidatorHandler>()
                 .Next<FindOneJsonRequestHandler>();
@@ -39,7 +39,7 @@ namespace WhizzJsonRepository.Repository
         {
             var response = new JsonResponseState(primaryKey);
             var columns = _repository.Schema.GetColumns(_relationName, _schemaName).Where(q => q.IsPrimaryKey).ToImmutableArray();
-            var handler = BaseJsonHandler.Init(ref response, _repository, columns, MandatoryColumns.All, _relationName, _schemaName)
+            var handler = QueryJsonHandler.Init(ref response, _repository, columns, MandatoryColumns.All, _relationName, _schemaName)
                 .Next<GenericRequiredJsonValidatorHandler>()
                 .Next<GenericTypeJsonValidatorHandler>();
             await handler.NextAsync<FindOneJsonRequestHandler>();
@@ -51,7 +51,7 @@ namespace WhizzJsonRepository.Repository
         {
             var response = new JsonResponseState(where);
             var columns = _repository.Schema.GetColumns(_relationName, _schemaName);
-            BaseJsonHandler.Init(ref response, _repository, columns, MandatoryColumns.None, _relationName, _schemaName)
+            QueryJsonHandler.Init(ref response, _repository, columns, MandatoryColumns.None, _relationName, _schemaName)
                 .Next<GenericRequiredJsonValidatorHandler>()
                 .Next<GenericTypeJsonValidatorHandler>()
                 .Next<FindAllJsonRequestHandler>();
@@ -64,7 +64,7 @@ namespace WhizzJsonRepository.Repository
             where ??= new JObject();
             var response = new JsonResponseState(where);
             var columns = _repository.Schema.GetColumns(_relationName, _schemaName);
-            var handler = BaseJsonHandler.Init(ref response, _repository, columns, MandatoryColumns.None, _relationName, _schemaName)
+            var handler = QueryJsonHandler.Init(ref response, _repository, columns, MandatoryColumns.None, _relationName, _schemaName)
                 .Next<GenericRequiredJsonValidatorHandler>()
                 .Next<GenericTypeJsonValidatorHandler>();
             await handler.NextAsync<FindAllJsonRequestHandler>();

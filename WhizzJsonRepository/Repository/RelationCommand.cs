@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using Npgsql;
 using WhizzJsonRepository.Interfaces;
+using WhizzJsonRepository.Repository;
 using WhizzORM.Interfaces;
 using WhizzSchema;
 using WhizzSchema.Entities;

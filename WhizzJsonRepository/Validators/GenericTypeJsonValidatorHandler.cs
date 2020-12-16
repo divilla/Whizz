@@ -5,9 +5,9 @@ using WhizzJsonRepository.Base;
 
 namespace WhizzJsonRepository.Validators
 {
-    public class GenericTypeJsonValidatorHandler : BaseJsonHandler
+    public class GenericTypeJsonValidatorHandler : QueryJsonHandler
     {
-        protected override BaseJsonHandler Handle()
+        protected override QueryJsonHandler Handle()
         {
             foreach (var property in State.Request.Properties())
             {
@@ -23,7 +23,7 @@ namespace WhizzJsonRepository.Validators
                 var valid = Repository.TypeValidator.Validate(property.Value, column.DataType, allowNull);
                 
                 if (!valid)
-                    State.AddError(property.Name, Repository.ErrorMessages.InvalidDataFormat(column.DataType));
+                    State.AddError(property.Name, Repository.PgValidationErrorMessages.InvalidDataFormat(column.DataType));
 
             }
 

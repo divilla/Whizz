@@ -3,9 +3,9 @@ using WhizzJsonRepository.Base;
 
 namespace WhizzJsonRepository.Handlers
 {
-    public class PrepareJsonRequestHandler : BaseJsonHandler
+    public class PrepareJsonRequestHandler : QueryJsonHandler
     {
-        protected override BaseJsonHandler Handle()
+        protected override QueryJsonHandler Handle()
         {
             foreach (var (key, value) in State.OriginalRequest)
             {

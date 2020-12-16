@@ -5,9 +5,9 @@ using WhizzJsonRepository.Base;
 
 namespace WhizzJsonRepository.Validators
 {
-    public class GenericRequiredJsonValidatorHandler : BaseJsonHandler
+    public class GenericRequiredJsonValidatorHandler : QueryJsonHandler
     {
-        protected override BaseJsonHandler Handle()
+        protected override QueryJsonHandler Handle()
         {
             var columnNames = MandatoryColumns switch
             {
@@ -16,17 +16,17 @@ namespace WhizzJsonRepository.Validators
                 _ => new string[0]
             };
 
-            var propertyNames = State.OriginalRequest.Properties().Select(s => s.Name).ToArray();
+            var propertyNames = State.Request.Properties().Select(s => s.Name).ToArray();
             foreach (var columnName in columnNames)
             {
                 if (!propertyNames.Contains(columnName))
                 {
-                    State.AddError(columnName, Repository.ErrorMessages.MissingProperty);
+                    State.AddError(columnName, Repository.PgValidationErrorMessages.MissingProperty);
                     State.Continue = false;
                 }
-                else if (string.IsNullOrWhiteSpace(State.OriginalRequest[columnName].Value<string>()))
+                else if (string.IsNullOrWhiteSpace(State.Request[columnName].Value<string>()))
                 {
-                    State.AddError(columnName, Repository.ErrorMessages.Required);
+                    State.AddError(columnName, Repository.PgValidationErrorMessages.Required);
                 }
             }
 

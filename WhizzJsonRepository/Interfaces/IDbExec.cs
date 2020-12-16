@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using WhizzJsonRepository.Interfaces;
 using WhizzORM.Context;
 using WhizzSchema.Interfaces;
 

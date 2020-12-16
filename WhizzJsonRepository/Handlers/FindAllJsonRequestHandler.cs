@@ -8,9 +8,9 @@ using WhizzJsonRepository.Base;
 
 namespace WhizzJsonRepository.Handlers
 {
-    public class FindAllJsonRequestHandler : BaseJsonHandler
+    public class FindAllJsonRequestHandler : QueryJsonHandler
     {
-        protected override BaseJsonHandler Handle()
+        protected override QueryJsonHandler Handle()
         {
             var command = InitCommand();
             try
@@ -30,7 +30,7 @@ namespace WhizzJsonRepository.Handlers
             return this;
         }
 
-        protected override async Task<BaseJsonHandler> HandleAsync()
+        protected override async Task<QueryJsonHandler> HandleAsync()
         {
             var command = InitCommand();
             try
@@ -54,12 +54,12 @@ namespace WhizzJsonRepository.Handlers
         {
             var select = State.Request.HasValues ? AllColumnNamesSelect("s") : AllColumnNamesSelect();
             var from = QuotedRelationName;
-            var sql = $"SELECT json_agg(t) FROM (SELECT {select} FROM {from} s) t";
+            var sql = $"SELECT json_agg(t) FROM (SELECT {select} FROM {from} s) t;";
             if (State.Request.HasValues)
             {
                 var where = string.Join(" AND ", State.Request.Properties()
                     .Select(s => $"s.{DbQuote(s.Name)} = p.{DbQuote(s.Name)}"));
-                sql = $"SELECT json_agg(t) FROM (SELECT {select} FROM {from} s, json_populate_record(null::{from}, @json) p WHERE {where}) t";
+                sql = $"SELECT json_agg(t) FROM (SELECT {select} FROM {from} s, json_populate_record(null::{from}, @json) p WHERE {where}) t;";
             }
             var command = new NpgsqlCommand(sql, Repository.Connection);
             command.Parameters.Add("json", NpgsqlDbType.Json);

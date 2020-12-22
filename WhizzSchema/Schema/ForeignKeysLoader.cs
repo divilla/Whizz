@@ -11,13 +11,13 @@ namespace WhizzSchema.Schema
         {
             const string sql = @"
                 SELECT json_agg(t)
-                    FROM (SELECT ns.nspname::text                   AS ""schema_name"",
-                           c.relname::text                          AS ""table_name"",
-                           a.attname::text                          AS ""column_name"",
-                           ct.conname::text                         AS ""constraint_name"",
-                           fns.nspname::text                        AS ""primary_key_schema_name"",
-                           fc.relname::text                         AS ""primary_key_table_name"",
-                           fa.attname::text                         AS ""primary_key_column_name""
+                    FROM (SELECT ns.nspname::text                   AS schema_name,
+                           c.relname::text                          AS table_name,
+                           a.attname::text                          AS column_name,
+                           ct.conname::text                         AS constraint_name,
+                           fns.nspname::text                        AS primary_key_schema_name,
+                           fc.relname::text                         AS primary_key_table_name,
+                           fa.attname::text                         AS primary_key_column_name
                     FROM (SELECT cts.conname,
                                  cts.conrelid,
                                  cts.confrelid,

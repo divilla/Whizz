@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -23,8 +24,9 @@ namespace WhizzSchema
         public ImmutableArray<SchemaEntity> SchemaEntities { get; private set; }
         public ImmutableArray<RelationEntity> RelationEntities { get; private set; }
         public ImmutableArray<ColumnEntity> ColumnEntities { get; private set; }
-        public ImmutableArray<ForeignKeyEntity> ForeignKeyEntities { get; private set; }
         public ImmutableArray<UniqueIndexEntity> UniqueIndexEntities { get; private set; }
+        public ImmutableArray<ForeignKeyEntity> ForeignKeyEntities { get; private set; }
+        public ConcurrentDictionary<string, ConcurrentDictionary<string, RelationSchema>> SchemaRelations { get; private set; }
         public ImmutableDictionary<uint, TypeEntity> TypeEntities { get; private set; }
         public ImmutableDictionary<string, ImmutableArray<Type>> TypeMap { get; private set; }
         public ImmutableArray<string> UsingNamespaces { get; private set; }
@@ -53,7 +55,7 @@ namespace WhizzSchema
             return RelationEntities.Any(q => q.RelationName == relationName && q.SchemaName == schemaName);
         }
 
-        public string QuotedRelationName(string relationName, string schemaName)
+        public string QuotedSchemaRelation(string relationName, string schemaName)
         {
             if (!RelationExists(relationName, schemaName))
                 throw new DbException($"Relation does not exist: '{relationName}'.'{schemaName}'");
@@ -118,7 +120,33 @@ namespace WhizzSchema
             if (!RelationExists(relationName, schemaName))
                 throw new DbException($"Relation does not exist: '{relationName}'.'{schemaName}'");
             
-            return ColumnEntities.Where(q => q.RelationName == relationName && q.SchemaName == schemaName).OrderBy(o => o.Position).ToImmutableArray();
+            return ColumnEntities
+                .Where(q => q.RelationName == relationName && q.SchemaName == schemaName)
+                .OrderBy(o => o.Position)
+                .ToImmutableArray();
+        }
+
+        public ImmutableArray<string> GetColumnNames(string relationName, string schemaName = IDbSchema.DefaultSchema)
+        {
+            if (!RelationExists(relationName, schemaName))
+                throw new DbException($"Relation does not exist: '{relationName}'.'{schemaName}'");
+            
+            return ColumnEntities
+                .Where(q => q.RelationName == relationName && q.SchemaName == schemaName)
+                .OrderBy(o => o.Position)
+                .Select(s => s.ColumnName)
+                .ToImmutableArray();
+        }
+
+        public ImmutableArray<ColumnEntity> GetPrimaryKeyColumns(string relationName, string schemaName = DefaultSchema)
+        {
+            if (!RelationExists(relationName, schemaName))
+                throw new DbException($"Relation does not exist: '{relationName}'.'{schemaName}'");
+            
+            return ColumnEntities
+                .Where(q => q.RelationName == relationName && q.SchemaName == schemaName && q.IsPrimaryKey)
+                .OrderBy(o => o.Position)
+                .ToImmutableArray();
         }
 
         public ImmutableArray<ForeignKeyEntity> GetForeignKeys(string tableName, string schemaName = DefaultSchema)
@@ -126,7 +154,7 @@ namespace WhizzSchema
             if (!RelationExists(tableName, schemaName))
                 throw new DbException($"Relation does not exist: '{tableName}'.'{schemaName}'");
             
-            return ForeignKeyEntities.Where(q => q.TableName == tableName && q.SchemaName == schemaName).ToImmutableArray();
+            return ForeignKeyEntities.Where(q => q.RelationName == tableName && q.SchemaName == schemaName).ToImmutableArray();
         }
 
         public ImmutableArray<UniqueIndexEntity> GetUniqueIndexes(string tableName, string schemaName = DefaultSchema)
@@ -134,7 +162,36 @@ namespace WhizzSchema
             if (!RelationExists(tableName, schemaName))
                 throw new DbException($"Relation does not exist: '{tableName}'.'{schemaName}'");
             
-            return UniqueIndexEntities.Where(q => q.TableName == tableName && q.SchemaName == schemaName).ToImmutableArray();
+            return UniqueIndexEntities.Where(q => q.RelationName == tableName && q.SchemaName == schemaName).ToImmutableArray();
+        }
+
+        public ConcurrentDictionary<string, ConcurrentDictionary<string, RelationSchema>> GetRelationSchemas()
+        {
+            var schemaRelations = new ConcurrentDictionary<string, ConcurrentDictionary<string, RelationSchema>>();
+            foreach (var entity in RelationEntities)
+            {
+                if (!schemaRelations.ContainsKey(entity.SchemaName))
+                {
+                    schemaRelations[entity.SchemaName] = new ConcurrentDictionary<string, RelationSchema>();
+                }
+
+                if (!schemaRelations[entity.SchemaName].ContainsKey(entity.RelationName))
+                {
+                    schemaRelations[entity.SchemaName][entity.RelationName] = new RelationSchema(
+                        entity.RelationName,
+                        entity.SchemaName,
+                        QuotedSchemaRelation(entity.RelationName, entity.SchemaName),
+                        ColumnEntities.Where(q => q.RelationName == entity.RelationName && q.SchemaName == entity.SchemaName).ToImmutableArray(),
+                        ColumnEntities.Where(q => q.RelationName == entity.RelationName && q.SchemaName == entity.SchemaName).Select(s => s.ColumnName).ToImmutableArray(),
+                        ColumnEntities.Where(q => q.RelationName == entity.RelationName && q.SchemaName == entity.SchemaName && q.IsPrimaryKey).ToImmutableArray(),
+                        ColumnEntities.Where(q => q.RelationName == entity.RelationName && q.SchemaName == entity.SchemaName && q.IsPrimaryKey).Select(s => s.ColumnName).ToImmutableArray(),
+                        UniqueIndexEntities.Where(q => q.RelationName == entity.RelationName && q.SchemaName == entity.SchemaName).ToImmutableArray(),
+                        ForeignKeyEntities.Where(q => q.RelationName == entity.RelationName && q.SchemaName == entity.SchemaName).ToImmutableArray()
+                    );
+                }
+            }
+
+            return schemaRelations;
         }
 
         public TypeEntity GetType(ColumnEntity column)
@@ -148,13 +205,6 @@ namespace WhizzSchema
             var type = typeEntity?.Type == null ? typeof(string) : typeEntity.Type;
 
             return type.ToKeywordName(column.Dimension);
-        }
-
-        public ImmutableArray<string> GetColumnNames(string relationName, string schemaName = IDbSchema.DefaultSchema)
-        {
-            return GetColumns(relationName, schemaName)
-                .Select(s => s.ColumnName)
-                .ToImmutableArray();
         }
 
         public ImmutableArray<string> GetPrimaryKeyColumnNames(string relationName, string schemaName = IDbSchema.DefaultSchema)
@@ -186,6 +236,7 @@ namespace WhizzSchema
             ForeignKeyEntities = ForeignKeysLoader.Load(_connection).ToImmutableArray();
             UniqueIndexEntities = UniqueIndexesLoader.Load(_connection).ToImmutableArray();
             TypeEntities = TypesLoader.Load(_connection).ToImmutableDictionary();
+            SchemaRelations = GetRelationSchemas();
             UsingNamespaces = _usingNamespaces().ToImmutableArray();
             TypeMap = _typesMap().ToImmutableDictionary();
             Keywords = _keywords().ToImmutableSortedSet();

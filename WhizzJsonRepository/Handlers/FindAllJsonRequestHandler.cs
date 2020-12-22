@@ -8,9 +8,9 @@ using WhizzJsonRepository.Base;
 
 namespace WhizzJsonRepository.Handlers
 {
-    public class FindAllJsonRequestHandler : QueryJsonHandler
+    public class FindAllJsonRequestHandler : BaseJsonHandler
     {
-        protected override QueryJsonHandler Handle()
+        protected override BaseJsonHandler Handle()
         {
             var command = InitCommand();
             try
@@ -30,7 +30,7 @@ namespace WhizzJsonRepository.Handlers
             return this;
         }
 
-        protected override async Task<QueryJsonHandler> HandleAsync()
+        protected override async Task<BaseJsonHandler> HandleAsync()
         {
             var command = InitCommand();
             try

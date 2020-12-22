@@ -12,36 +12,36 @@ namespace WhizzJsonRepository.Repository
 {
     public class InsertJsonInvoker
     {
-        public InsertJsonInvoker(JsonRepository<> repository, string relationName, string schemaName)
+        public InsertJsonInvoker(TableJsonRepository repository, string relationName, string schemaName)
         {
             _repository = repository;
             _relationName = relationName;
             _schemaName = schemaName;
         }
 
-        private JsonRepository<> _repository;
+        private TableJsonRepository _repository;
         private string _relationName;
         private string _schemaName;
 
-        public JsonResponseState Values(JObject values)
+        public JsonResponse Values(JObject values)
         {
-            var response = new JsonResponseState(values);
+            var response = new JsonResponse(values);
             var columns = _repository.Schema.GetColumns(_relationName, _schemaName).Where(q => !q.IsReadonly).ToImmutableArray();
-            QueryJsonHandler.Init(ref response, _repository, columns, MandatoryColumns.Required, _relationName, _schemaName)
+            BaseJsonHandler.Init(ref response, _repository, columns, MandatoryColumns.Required, _relationName, _schemaName)
                 .Next<GenericRequiredJsonValidatorHandler>()
-                .Next<GenericTypeJsonValidatorHandler>()
+                .Next<GenericTypeJsonValidator>()
                 .Next<InsertRequestHandler>();
 
             return response;
         }
 
-        public async Task<JsonResponseState> ValuesAsync(JObject values)
+        public async Task<JsonResponse> ValuesAsync(JObject values)
         {
-            var response = new JsonResponseState(values);
+            var response = new JsonResponse(values);
             var columns = _repository.Schema.GetColumns(_relationName, _schemaName).Where(q => !q.IsReadonly).ToImmutableArray();
-            var handler = QueryJsonHandler.Init(ref response, _repository, columns, MandatoryColumns.Required, _relationName, _schemaName)
+            var handler = BaseJsonHandler.Init(ref response, _repository, columns, MandatoryColumns.Required, _relationName, _schemaName)
                 .Next<GenericRequiredJsonValidatorHandler>()
-                .Next<GenericTypeJsonValidatorHandler>();
+                .Next<GenericTypeJsonValidator>();
             await handler.NextAsync<InsertRequestHandler>();
 
             return response;

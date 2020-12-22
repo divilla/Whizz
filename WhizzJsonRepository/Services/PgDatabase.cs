@@ -12,15 +12,14 @@ using WhizzSchema.Interfaces;
 
 namespace WhizzJsonRepository.Services
 {
-    public abstract class PgDatabase : IPgDatabase
+    public abstract class PgDatabase : IDatabase
     {
         protected PgDatabase(string connectionString)
         {
             ConnectionString = connectionString;
             Schema = new DbSchema(connectionString);
         }
-
-
+        
         public string ConnectionString { get; } 
         public DbSchema Schema { get; }
         public Func<string, string> Quote => Schema.Quote;
@@ -30,25 +29,13 @@ namespace WhizzJsonRepository.Services
         public Case JsonCase => Case.Camel;
         public Func<string, string> ToJsonCase => (s) => s.ToCamelCase();
         public Func<string, string> ToQuotedJsonCase  => (s) => Quote(s.ToCamelCase());
-        public IPgTypeValidator TypeValidator { get; set; } = new PgTypeValidator();
-        public PgValidationErrorMessages ErrorMessages { get; set; } = new PgValidationErrorMessages();
 
-        
-        
-        public NpgsqlConnection OpenConnection()
+        public ITypeValidator TypeValidator { get; set; } = new TypeValidator();
+        public ValidationErrorMessages ErrorMessages { get; set; } = new ValidationErrorMessages();
+
+        public string QuotedRelationName(string relationName, string schemaName)
         {
-            var connection = new NpgsqlConnection(ConnectionString);
-            connection.Open();
-
-            return connection;
-        }
-
-        public async Task<NpgsqlConnection> OpenConnectionAsync()
-        {
-            var connection = new NpgsqlConnection(ConnectionString);
-            await connection.OpenAsync();
-            
-            return connection;
+            return Schema.QuotedSchemaRelation(relationName, schemaName);
         }
     }
 }

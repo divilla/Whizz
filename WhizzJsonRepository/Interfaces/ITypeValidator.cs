@@ -2,7 +2,7 @@
 
 namespace WhizzORM.Interfaces
 {
-    public interface IPgTypeValidator
+    public interface ITypeValidator
     {
         bool Validate(JToken jToken, string pgsqlType, bool allowNull);
     }

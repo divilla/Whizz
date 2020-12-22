@@ -12,7 +12,7 @@ namespace WhizzSchema.Schema
             const string sql = @"
                 SELECT json_agg(t)
                 FROM (SELECT ns.nspname::text AS ""schemaName"",
-                       tc.relname::text AS ""tableName"",
+                       tc.relname::text AS ""relationName"",
                        ic.relname::text AS ""indexName"",
                        array_agg(a.attname)::text[] AS ""columnNames""
                 FROM pg_namespace ns

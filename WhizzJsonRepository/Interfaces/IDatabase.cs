@@ -1,13 +1,11 @@
 using System;
-using System.Threading.Tasks;
-using Npgsql;
 using WhizzBase.Enums;
 using WhizzORM.Interfaces;
 using WhizzSchema;
 
 namespace WhizzJsonRepository.Interfaces
 {
-    public interface IPgDatabase
+    public interface IDatabase
     {
         string ConnectionString { get; }
         DbSchema Schema { get; }
@@ -17,9 +15,8 @@ namespace WhizzJsonRepository.Interfaces
         Case JsonCase { get; }
         Func<string, string> ToJsonCase { get; }
         Func<string, string> ToQuotedJsonCase { get; }
-        IPgTypeValidator TypeValidator { get; set; }
-        PgValidationErrorMessages ErrorMessages { get; set; }
-        NpgsqlConnection OpenConnection();
-        Task<NpgsqlConnection> OpenConnectionAsync();
+        ITypeValidator TypeValidator { get; set; }
+        ValidationErrorMessages ErrorMessages { get; set; }
+        string QuotedRelationName(string relationName, string schemaName);
     }
 }

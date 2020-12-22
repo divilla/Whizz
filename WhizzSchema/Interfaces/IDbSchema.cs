@@ -19,7 +19,7 @@ namespace WhizzSchema.Interfaces
         ImmutableSortedSet<string> Keywords { get; }
         bool SchemaExists(string schemaName);
         bool RelationExists(string relationName, string schemaName);
-        string QuotedRelationName(string relationName, string schemaName);
+        string QuotedSchemaRelation(string relationName, string schemaName);
         RelationEntity UnquoteRelationName(string name);
         string Unquote(string value);
         string Quote(string value);

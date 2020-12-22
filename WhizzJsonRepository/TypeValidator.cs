@@ -6,9 +6,9 @@ using WhizzORM.Interfaces;
 
 namespace WhizzJsonRepository
 {
-    public class PgTypeValidator : IPgTypeValidator
+    public class TypeValidator : ITypeValidator
     {
-        public PgTypeValidator()
+        public TypeValidator()
         {
             _validators["smallint"] = jToken => 
                 jToken.Type == JTokenType.Integer 

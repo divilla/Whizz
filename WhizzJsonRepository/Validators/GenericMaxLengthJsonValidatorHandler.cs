@@ -4,21 +4,19 @@ using WhizzJsonRepository.Base;
 
 namespace WhizzJsonRepository.Validators
 {
-    public class GenericMaxLengthJsonValidatorHandler : QueryJsonHandler
+    public class GenericMaxLengthJsonValidatorHandler : Validator
     {
-        protected override QueryJsonHandler Handle()
+        protected override void Validate()
         {
-            foreach (var column in Columns.Where(q => q.CharacterMaximumLength != null && q.CharacterMaximumLength > 0))
-            {
-                if (State.Request[column.ColumnName].Type == JTokenType.Null)
-                    continue;
-                
-                if (State.Request[column.ColumnName] is JValue 
-                    && ((JValue) State.Request[column.ColumnName]).Value<string>().Length > column.CharacterMaximumLength)
-                    State.AddError(column.ColumnName, Repository.PgValidationErrorMessages.TooLong(column.CharacterMaximumLength));
-            }
+            var columns = Columns.Where(q => q.CharacterMaximumLength > 0);
 
-            return this;
+            foreach (var column in columns)
+            {
+                if (DbRequest[column.ColumnName].Value<string>().Length > column.CharacterMaximumLength)
+                {
+                    Response.AddError(DbToJsonName[column.ColumnName], Database.ErrorMessages.TextTooLong(column.CharacterMaximumLength));
+                }
+            }
         }
     }
 }
